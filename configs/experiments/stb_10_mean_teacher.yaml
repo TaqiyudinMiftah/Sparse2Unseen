@@ -1,0 +1,38 @@
+seed: 1
+experiment:
+  name: stb_10_mean_teacher_seed1
+  regime: mean_teacher
+
+device: cuda
+
+data:
+  source_train_manifest: data/manifests/stb_train.jsonl
+  source_test_manifest: data/manifests/stb_test.jsonl
+  target_test_manifests:
+    sta: data/manifests/sta_test.jsonl
+    qnrf: data/manifests/qnrf_test.jsonl
+  split: splits/stb_10_seed1.json
+  crop_size: 320
+  num_workers: 8
+
+model:
+  name: vgg16_density
+  pretrained: true
+
+train:
+  epochs: 180
+  batch_size: 8
+  unlabeled_batch_size: 8
+  lr: 0.0001
+  weight_decay: 0.0001
+  amp: true
+  output_dir: runs/stb_10_mean_teacher_seed1
+
+ssl:
+  enabled: true
+  ema_decay: 0.999
+  unsup_weight: 1.0
+  warmup_epochs: 10
+
+dg:
+  enabled: false

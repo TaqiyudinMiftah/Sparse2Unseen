@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.idea/
+.vscode/
+
+# Data / checkpoints
+/data/*
+!/data/README.md
+!/data/manifests/
+/data/manifests/*.jsonl
+runs/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+
+# External code is bootstrapped separately
+external/*
+!external/README.md
+
+# Experiment artifacts
+wandb/
+tensorboard/
+*.log

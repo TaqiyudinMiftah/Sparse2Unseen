@@ -1,0 +1,34 @@
+seed: 1
+experiment:
+  name: stb_10_label_only_seed1
+  regime: label_only
+
+device: cuda
+
+data:
+  source_train_manifest: data/manifests/stb_train.jsonl
+  source_test_manifest: data/manifests/stb_test.jsonl
+  target_test_manifests:
+    sta: data/manifests/sta_test.jsonl
+    qnrf: data/manifests/qnrf_test.jsonl
+  split: splits/stb_10_seed1.json
+  crop_size: 320
+  num_workers: 8
+
+model:
+  name: vgg16_density
+  pretrained: true
+
+train:
+  epochs: 180
+  batch_size: 16
+  lr: 0.0001
+  weight_decay: 0.0001
+  amp: true
+  output_dir: runs/stb_10_label_only_seed1
+
+ssl:
+  enabled: false
+
+dg:
+  enabled: false

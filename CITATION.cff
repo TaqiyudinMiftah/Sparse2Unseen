@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this research scaffold, please cite the eventual Sparse2Unseen paper and the upstream baselines you use."
+title: "Sparse2Unseen: Label-Efficient Single-Domain Generalization for Crowd Counting"
+type: software
+version: 0.1.0
+date-released: 2026-09-17
+license: Apache-2.0
