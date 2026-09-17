@@ -32,8 +32,6 @@ targets: ShanghaiTech Part A, UCF-QNRF
 3. `sparse_mpcount`: run official MPCount using only the sparse labeled source subset.
 4. `ssl_dg`: prototype domain-stable pseudo-labeling using unlabeled source images.
 
-The repository intentionally keeps the first three baselines separate from the proposed method so that gains can be attributed cleanly.
-
 ## Repository layout
 
 ```text
@@ -48,36 +46,54 @@ train.py                   training entry point
 evaluate.py                cross-domain evaluation entry point
 ```
 
-## Environment
+## Environment with UV
 
-For the standalone Sparse2Unseen scaffold:
+The project uses [UV](https://docs.astral.sh/uv/) as its environment and dependency manager. Python is pinned to `3.10.12` in `.python-version` to match the MPCount reproduction environment. PyTorch is pinned to `2.0.1` and torchvision to `0.15.2`.
+
+Install UV, then from the repository root run:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
+uv python install 3.10.12
+uv sync
 ```
 
-For exact MPCount reproduction, use the upstream versions documented in `docs/MPCOUNT_INTEGRATION.md` (Python 3.10.12, PyTorch 2.0.1, torchvision 0.15.2).
+`uv sync` creates `.venv` automatically and installs the default `dev` dependency group, including pytest. Run project commands through UV rather than manually activating the environment:
 
-## 1. Prepare datasets with MPCount
+```bash
+uv run python --version
+uv run pytest
+```
 
-The easiest reproducible path is to use the official MPCount preprocessing for ShanghaiTech A/B and UCF-QNRF. Clone it into `external/MPCount`:
+For reproducible experiments, commit `uv.lock` after generating it with `uv lock`/`uv sync`. When `uv.lock` is present, use:
+
+```bash
+uv sync --frozen
+```
+
+## 1. Download raw datasets
+
+```bash
+uv run python scripts/download_datasets.py all
+```
+
+The downloader retrieves ShanghaiTech A/B and UCF-QNRF into `data/raw/` by default. See `data/README.md` for options.
+
+## 2. Prepare datasets with MPCount
+
+Clone the official MPCount repository into `external/MPCount`:
 
 ```bash
 bash scripts/bootstrap_mpcount.sh
 ```
 
-Then follow `docs/MPCOUNT_INTEGRATION.md` to preprocess the datasets and generate density maps.
+Then follow `docs/MPCOUNT_INTEGRATION.md` to preprocess the datasets and generate density maps. Raw datasets and processed images are intentionally excluded from git.
 
-Raw datasets and processed images are intentionally excluded from git.
-
-## 2. Build manifests
+## 3. Build manifests
 
 After preprocessing, create a JSONL manifest. Example:
 
 ```bash
-python tools/build_manifest.py \
+uv run python tools/build_manifest.py \
   --root /path/to/mpcount/data/stb \
   --phase train \
   --output data/manifests/stb_train.jsonl
@@ -85,12 +101,10 @@ python tools/build_manifest.py \
 
 Repeat for source/target test sets.
 
-Each row contains an ID, image path, point annotation path, optional density-map path, and ground-truth count.
-
-## 3. Generate deterministic sparse-label splits
+## 4. Generate deterministic sparse-label splits
 
 ```bash
-python tools/generate_splits.py \
+uv run python tools/generate_splits.py \
   --manifest data/manifests/stb_train.jsonl \
   --fraction 0.10 \
   --seed 1 \
@@ -99,26 +113,24 @@ python tools/generate_splits.py \
 
 For the paper, generate seeds 1, 2, and 3 at 5%, 10%, 40%, and 100%.
 
-## 4. Sanity-check the first experiment
-
-The repository can validate configuration/splits before any GPU run:
+## 5. Sanity-check the first experiment
 
 ```bash
-python train.py --config configs/experiments/stb_10_label_only.yaml --dry-run
+uv run python train.py --config configs/experiments/stb_10_label_only.yaml --dry-run
 ```
 
 Once manifest paths are populated, train with:
 
 ```bash
-python train.py --config configs/experiments/stb_10_label_only.yaml
-python train.py --config configs/experiments/stb_10_mean_teacher.yaml
-python train.py --config configs/experiments/stb_10_ssl_dg.yaml
+uv run python train.py --config configs/experiments/stb_10_label_only.yaml
+uv run python train.py --config configs/experiments/stb_10_mean_teacher.yaml
+uv run python train.py --config configs/experiments/stb_10_ssl_dg.yaml
 ```
 
 Evaluate on all configured domains:
 
 ```bash
-python evaluate.py \
+uv run python evaluate.py \
   --config configs/experiments/stb_10_label_only.yaml \
   --checkpoint runs/stb_10_label_only_seed1/best.pt
 ```
@@ -142,6 +154,7 @@ This is implemented in `src/sparse2unseen/confidence/region_stability.py` and is
 - Tune hyperparameters only on source-domain validation data.
 - Report source in-domain MAE/RMSE alongside every unseen-domain result.
 - Keep a 100%-label result in each source-domain table as an annotation-cost reference.
+- Keep `.python-version`, `pyproject.toml`, and `uv.lock` under version control.
 
 ## Upstream reference
 
@@ -154,4 +167,4 @@ Sparse2Unseen does not vendor MPCount source code. The bootstrap script checks o
 
 ## Status
 
-This initial scaffold is meant to establish B0/B1 and the first domain-stability prototype. The next milestone is to reproduce `SHB -> SHA/QNRF` with 100% source labels, then rerun at 10% labels before modifying the method.
+The current scaffold establishes B0/B1 and the first domain-stability prototype. The next milestone is to reproduce `SHB -> SHA/QNRF` with 100% source labels, then rerun at 10% labels before modifying the method.
