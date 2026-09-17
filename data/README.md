@@ -4,28 +4,34 @@ Do not commit raw crowd-counting datasets to this repository.
 
 ## Download raw datasets
 
-Sparse2Unseen includes a resumable downloader for the two datasets used in the first experiments:
+Sparse2Unseen includes a downloader for the two datasets used in the first experiments:
 
 ```bash
 # Download + extract ShanghaiTech A/B and UCF-QNRF
-python scripts/download_datasets.py all
+uv run python scripts/download_datasets.py all
 
 # Or download them individually
-python scripts/download_datasets.py shanghaitech
-python scripts/download_datasets.py ucf_qnrf
+uv run python scripts/download_datasets.py shanghaitech
+uv run python scripts/download_datasets.py ucf_qnrf
 
 # Preview actions without downloading
-python scripts/download_datasets.py all --dry-run
+uv run python scripts/download_datasets.py all --dry-run
 ```
 
 The default destination is `data/raw/`. Use `--dest /path/to/raw` to store the datasets elsewhere.
 
 The downloader uses:
 
-- ShanghaiTech A/B: the long-standing Dropbox raw archive referenced by crowd-counting implementations (`ShanghaiTech.zip`).
+- ShanghaiTech A/B: a public `ShanghaiTech.zip` Google Drive mirror linked by the official TencentYoutuResearch SASNet repository. The script uses `gdown` so Google Drive confirmation pages are handled correctly.
 - UCF-QNRF: the University of Central Florida CRCV archive (`UCF-QNRF_ECCV18.zip`).
 
-It supports partial-download resume when the server accepts HTTP Range requests, validates ZIP signatures, extracts the archives, and checks for the expected dataset folders. By default the ZIP is removed after successful extraction; pass `--keep-archive` to retain it.
+Direct HTTP downloads support resume when the server accepts HTTP Range requests. Google Drive downloads use `gdown` resume support. Every downloaded archive is checked for a ZIP signature before extraction, and extracted folders are checked for the expected dataset markers. By default the ZIP is removed after successful extraction; pass `--keep-archive` to retain it.
+
+If an older checkout left an HTML response such as `data/raw/ShanghaiTech.zip.part`, the updated downloader automatically removes that stale non-ZIP partial file before retrying from Google Drive. You can also force a clean download with:
+
+```bash
+uv run python scripts/download_datasets.py shanghaitech --force
+```
 
 Please follow the datasets' respective research/use terms and cite their original papers.
 

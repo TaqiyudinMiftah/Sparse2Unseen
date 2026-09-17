@@ -1,38 +1,14 @@
 #!/usr/bin/env python3
 """Download raw ShanghaiTech and UCF-QNRF crowd-counting datasets.
 
-The script intentionally downloads the original/raw dataset archives and keeps
-preprocessing separate. It uses only the Python standard library, supports
-resuming partial downloads when the server accepts HTTP Range requests, and
-validates that the downloaded file is a ZIP archive before extraction.
-
-Examples
---------
-Download and extract everything::
-
-    python scripts/download_datasets.py all
-
-Download only ShanghaiTech::
-
-    python scripts/download_datasets.py shanghaitech
-
-Choose a different destination::
-
-    python scripts/download_datasets.py ucf_qnrf --dest /mnt/datasets/raw
-
-Keep the ZIP archive after extraction::
-
-    python scripts/download_datasets.py all --keep-archive
-
-Show what would happen without downloading::
-
-    python scripts/download_datasets.py all --dry-run
+ShanghaiTech is downloaded from the public Google Drive mirror linked by the
+official SASNet repository. UCF-QNRF is downloaded from the official UCF CRCV
+archive. Downloads are validated as ZIP files before extraction.
 """
 
 from __future__ import annotations
 
 import argparse
-import os
 import shutil
 import sys
 import time
@@ -41,42 +17,47 @@ import urllib.request
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
-
+from typing import Iterable, Literal
 
 MIB = 1024 * 1024
 GIB = 1024 * MIB
+
+Provider = Literal["http", "gdrive"]
 
 
 @dataclass(frozen=True)
 class DatasetSpec:
     key: str
     display_name: str
-    url: str
+    provider: Provider
     archive_name: str
     extract_dir: str
     expected_markers: tuple[str, ...]
     approximate_required_space_gib: float
     source_note: str
+    url: str | None = None
+    gdrive_id: str | None = None
 
 
 DATASETS: dict[str, DatasetSpec] = {
     "shanghaitech": DatasetSpec(
         key="shanghaitech",
         display_name="ShanghaiTech Part A + Part B",
-        url="https://www.dropbox.com/s/fipgjqxl7uj8hd5/ShanghaiTech.zip?dl=1",
+        provider="gdrive",
+        gdrive_id="1DLgEpNEPp3UqPnEtzW0BSMdS151kRNCs",
         archive_name="ShanghaiTech.zip",
         extract_dir="shanghaitech",
         expected_markers=("part_A_final", "part_B_final"),
         approximate_required_space_gib=2.0,
         source_note=(
-            "Long-standing ShanghaiTech raw archive distributed through Dropbox "
-            "and referenced by crowd-counting implementations."
+            "Public Google Drive mirror linked by the official TencentYoutuResearch "
+            "SASNet repository."
         ),
     ),
     "ucf_qnrf": DatasetSpec(
         key="ucf_qnrf",
         display_name="UCF-QNRF",
+        provider="http",
         url="https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip",
         archive_name="UCF-QNRF_ECCV18.zip",
         extract_dir="ucf_qnrf",
@@ -126,7 +107,7 @@ def parse_args() -> argparse.Namespace:
         "--timeout",
         type=int,
         default=60,
-        help="HTTP socket timeout in seconds (default: 60).",
+        help="HTTP socket timeout in seconds for direct HTTP downloads (default: 60).",
     )
     return parser.parse_args()
 
@@ -190,7 +171,7 @@ def extraction_is_complete(spec: DatasetSpec, extract_root: Path) -> bool:
 def build_request(url: str, start: int = 0) -> urllib.request.Request:
     headers = {
         "User-Agent": (
-            "Mozilla/5.0 Sparse2Unseen-dataset-downloader/1.0 "
+            "Mozilla/5.0 Sparse2Unseen-dataset-downloader/1.1 "
             "(+https://github.com/TaqiyudinMiftah/Sparse2Unseen)"
         )
     }
@@ -213,7 +194,7 @@ def print_progress(downloaded: int, total: int | None, started_at: float) -> Non
     print(msg, end="", flush=True)
 
 
-def download_with_resume(url: str, output: Path, timeout: int, force: bool) -> None:
+def prepare_existing_download(output: Path, force: bool) -> tuple[Path, int]:
     partial = output.with_suffix(output.suffix + ".part")
 
     if force:
@@ -223,13 +204,24 @@ def download_with_resume(url: str, output: Path, timeout: int, force: bool) -> N
     if output.exists():
         if looks_like_zip(output):
             print(f"Archive already present: {output}")
-            return
+            return partial, -1
         raise RuntimeError(
             f"Existing file is not a ZIP archive: {output}. "
             "Delete it or rerun with --force."
         )
 
-    existing = partial.stat().st_size if partial.exists() else 0
+    if partial.exists() and not looks_like_zip(partial):
+        print(f"Removing stale non-ZIP partial download: {partial}")
+        partial.unlink()
+
+    return partial, partial.stat().st_size if partial.exists() else 0
+
+
+def download_http(url: str, output: Path, timeout: int, force: bool) -> None:
+    partial, existing = prepare_existing_download(output, force)
+    if existing == -1:
+        return
+
     request = build_request(url, existing)
     print(f"Downloading: {url}")
     if existing:
@@ -253,11 +245,8 @@ def download_with_resume(url: str, output: Path, timeout: int, force: bool) -> N
         mode = "ab"
         base = existing
     else:
-        # Server ignored the Range header. Restart cleanly rather than appending a
-        # complete response to a partial archive.
         mode = "wb"
         base = 0
-        existing = 0
 
     total = base + response_size if response_size is not None else None
     started_at = time.monotonic()
@@ -272,26 +261,69 @@ def download_with_resume(url: str, output: Path, timeout: int, force: bool) -> N
                     break
                 handle.write(chunk)
                 downloaded_this_session += len(chunk)
-                print_progress(
-                    base + downloaded_this_session,
-                    total,
-                    started_at,
-                )
+                print_progress(base + downloaded_this_session, total, started_at)
     except KeyboardInterrupt:
         print(f"\nDownload interrupted. Partial file kept for resume: {partial}")
         raise
 
     print()
     partial.replace(output)
+    validate_download(output, url)
 
-    if not looks_like_zip(output):
-        output.rename(partial)
+
+def download_gdrive(file_id: str, output: Path, force: bool) -> None:
+    partial, existing = prepare_existing_download(output, force)
+    if existing == -1:
+        return
+
+    try:
+        import gdown
+    except ImportError as exc:
         raise RuntimeError(
-            f"Downloaded content from {url} is not a ZIP archive. "
-            f"The server may have returned an HTML/error page. Partial file: {partial}"
+            "Google Drive download support requires 'gdown'. Run 'uv sync' and retry."
+        ) from exc
+
+    print(f"Downloading Google Drive file: {file_id}")
+    result = gdown.download(
+        id=file_id,
+        output=str(output),
+        quiet=False,
+        resume=True,
+    )
+    if result is None:
+        raise RuntimeError(
+            "gdown could not download the public ShanghaiTech archive. "
+            "Check network access to Google Drive and retry."
         )
 
+    if partial.exists() and not looks_like_zip(partial):
+        partial.unlink(missing_ok=True)
+    validate_download(output, f"Google Drive file {file_id}")
+
+
+def validate_download(output: Path, source: str) -> None:
+    if not looks_like_zip(output):
+        bad = output.with_suffix(output.suffix + ".bad")
+        output.replace(bad)
+        raise RuntimeError(
+            f"Downloaded content from {source} is not a ZIP archive. "
+            f"Saved the invalid response as {bad}."
+        )
     print(f"Saved: {output} ({human_bytes(output.stat().st_size)})")
+
+
+def download_dataset(spec: DatasetSpec, output: Path, timeout: int, force: bool) -> None:
+    if spec.provider == "http":
+        if not spec.url:
+            raise RuntimeError(f"Missing HTTP URL for {spec.key}")
+        download_http(spec.url, output, timeout=timeout, force=force)
+        return
+    if spec.provider == "gdrive":
+        if not spec.gdrive_id:
+            raise RuntimeError(f"Missing Google Drive file ID for {spec.key}")
+        download_gdrive(spec.gdrive_id, output, force=force)
+        return
+    raise RuntimeError(f"Unsupported provider: {spec.provider}")
 
 
 def extract_zip(archive: Path, destination: Path, force: bool) -> None:
@@ -331,7 +363,10 @@ def process_dataset(
         print(f"Extract to: {extract_root}")
 
     if dry_run:
-        print(f"[dry-run] would download {spec.url}")
+        if spec.provider == "gdrive":
+            print(f"[dry-run] would download Google Drive file {spec.gdrive_id}")
+        else:
+            print(f"[dry-run] would download {spec.url}")
         if extract:
             print(f"[dry-run] would extract {archive} to {extract_root}")
         return
@@ -341,7 +376,7 @@ def process_dataset(
         print("Use --force to redownload/re-extract it.")
         return
 
-    download_with_resume(spec.url, archive, timeout=timeout, force=force)
+    download_dataset(spec, archive, timeout=timeout, force=force)
 
     if not extract:
         return
@@ -382,6 +417,7 @@ def main() -> int:
     if not args.dry_run:
         check_disk_space(args.dest, specs)
 
+    failures: list[tuple[str, str]] = []
     for spec in specs:
         try:
             process_dataset(
@@ -397,7 +433,13 @@ def main() -> int:
             return 130
         except Exception as exc:  # noqa: BLE001 - CLI should give a clean error.
             print(f"ERROR [{spec.display_name}]: {exc}", file=sys.stderr)
-            return 1
+            failures.append((spec.display_name, str(exc)))
+
+    if failures:
+        print("\nCompleted with errors:", file=sys.stderr)
+        for name, message in failures:
+            print(f"  - {name}: {message}", file=sys.stderr)
+        return 1
 
     print("\nDone.")
     return 0
