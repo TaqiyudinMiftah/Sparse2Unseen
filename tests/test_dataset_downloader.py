@@ -19,6 +19,15 @@ def test_dataset_selection() -> None:
     assert [d.key for d in module.selected_specs("all")] == ["shanghaitech", "ucf_qnrf"]
 
 
+def test_sources_are_configured() -> None:
+    shanghai = module.DATASETS["shanghaitech"]
+    qnrf = module.DATASETS["ucf_qnrf"]
+    assert shanghai.provider == "gdrive"
+    assert shanghai.gdrive_id == "1DLgEpNEPp3UqPnEtzW0BSMdS151kRNCs"
+    assert qnrf.provider == "http"
+    assert qnrf.url and "crcv.ucf.edu" in qnrf.url
+
+
 def test_zip_validation_and_marker_detection(tmp_path: Path) -> None:
     archive = tmp_path / "tiny.zip"
     with zipfile.ZipFile(archive, "w") as zf:
@@ -31,6 +40,17 @@ def test_zip_validation_and_marker_detection(tmp_path: Path) -> None:
     module.extract_zip(archive, extracted, force=False)
     assert module.find_marker(extracted, "part_A_final")
     assert module.find_marker(extracted, "part_B_final")
+
+
+def test_stale_html_partial_is_removed(tmp_path: Path) -> None:
+    archive = tmp_path / "ShanghaiTech.zip"
+    partial = tmp_path / "ShanghaiTech.zip.part"
+    partial.write_text("<html>Dropbox error</html>", encoding="utf-8")
+
+    returned_partial, existing = module.prepare_existing_download(archive, force=False)
+    assert returned_partial == partial
+    assert existing == 0
+    assert not partial.exists()
 
 
 def test_human_bytes() -> None:
