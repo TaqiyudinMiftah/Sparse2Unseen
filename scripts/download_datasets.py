@@ -3,7 +3,8 @@
 
 ShanghaiTech is downloaded from the public Google Drive mirror linked by the
 official SASNet repository. UCF-QNRF is downloaded from the official UCF CRCV
-archive. Downloads are validated as ZIP files before extraction.
+archive. Direct HTTPS downloads use requests + certifi instead of the host
+system CA store, which is more reliable in containers and HPC environments.
 """
 
 from __future__ import annotations
@@ -12,16 +13,16 @@ import argparse
 import shutil
 import sys
 import time
-import urllib.error
-import urllib.request
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Literal
 
+import certifi
+import requests
+
 MIB = 1024 * 1024
 GIB = 1024 * MIB
-
 Provider = Literal["http", "gdrive"]
 
 
@@ -72,42 +73,30 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Download raw crowd-counting datasets for Sparse2Unseen."
     )
-    parser.add_argument(
-        "dataset",
-        choices=["all", *DATASETS.keys()],
-        help="Dataset to download.",
-    )
+    parser.add_argument("dataset", choices=["all", *DATASETS.keys()])
     parser.add_argument(
         "--dest",
         type=Path,
         default=Path("data/raw"),
         help="Destination root (default: data/raw).",
     )
-    parser.add_argument(
-        "--no-extract",
-        action="store_true",
-        help="Download archives but do not extract them.",
-    )
-    parser.add_argument(
-        "--keep-archive",
-        action="store_true",
-        help="Keep ZIP files after successful extraction.",
-    )
-    parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Redownload/re-extract even when output already exists.",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print planned actions without downloading anything.",
-    )
+    parser.add_argument("--no-extract", action="store_true")
+    parser.add_argument("--keep-archive", action="store_true")
+    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--timeout",
         type=int,
         default=60,
-        help="HTTP socket timeout in seconds for direct HTTP downloads (default: 60).",
+        help="HTTP connect/read timeout in seconds (default: 60).",
+    )
+    parser.add_argument(
+        "--insecure-ssl",
+        action="store_true",
+        help=(
+            "Disable TLS certificate verification for direct HTTPS downloads. "
+            "Use only as a last resort for the official UCF host."
+        ),
     )
     return parser.parse_args()
 
@@ -137,8 +126,7 @@ def check_disk_space(dest: Path, specs: Iterable[DatasetSpec]) -> None:
     if free < recommended:
         print(
             f"WARNING: only {human_bytes(free)} free under {dest}. "
-            f"Approximately {recommended / GIB:.1f} GiB is recommended for the "
-            "selected download(s), including extraction space.",
+            f"Approximately {recommended / GIB:.1f} GiB is recommended.",
             file=sys.stderr,
         )
 
@@ -168,18 +156,6 @@ def extraction_is_complete(spec: DatasetSpec, extract_root: Path) -> bool:
     )
 
 
-def build_request(url: str, start: int = 0) -> urllib.request.Request:
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 Sparse2Unseen-dataset-downloader/1.1 "
-            "(+https://github.com/TaqiyudinMiftah/Sparse2Unseen)"
-        )
-    }
-    if start > 0:
-        headers["Range"] = f"bytes={start}-"
-    return urllib.request.Request(url, headers=headers)
-
-
 def print_progress(downloaded: int, total: int | None, started_at: float) -> None:
     elapsed = max(time.monotonic() - started_at, 1e-6)
     speed = downloaded / elapsed
@@ -196,7 +172,6 @@ def print_progress(downloaded: int, total: int | None, started_at: float) -> Non
 
 def prepare_existing_download(output: Path, force: bool) -> tuple[Path, int]:
     partial = output.with_suffix(output.suffix + ".part")
-
     if force:
         output.unlink(missing_ok=True)
         partial.unlink(missing_ok=True)
@@ -210,6 +185,7 @@ def prepare_existing_download(output: Path, force: bool) -> tuple[Path, int]:
             "Delete it or rerun with --force."
         )
 
+    # A valid partial ZIP still starts with the ZIP signature. HTML/error responses do not.
     if partial.exists() and not looks_like_zip(partial):
         print(f"Removing stale non-ZIP partial download: {partial}")
         partial.unlink()
@@ -217,54 +193,106 @@ def prepare_existing_download(output: Path, force: bool) -> tuple[Path, int]:
     return partial, partial.stat().st_size if partial.exists() else 0
 
 
-def download_http(url: str, output: Path, timeout: int, force: bool) -> None:
+def validate_download(output: Path, source: str) -> None:
+    if not looks_like_zip(output):
+        bad = output.with_suffix(output.suffix + ".bad")
+        output.replace(bad)
+        raise RuntimeError(
+            f"Downloaded content from {source} is not a ZIP archive. "
+            f"Saved the invalid response as {bad}."
+        )
+    print(f"Saved: {output} ({human_bytes(output.stat().st_size)})")
+
+
+def download_http(
+    url: str,
+    output: Path,
+    timeout: int,
+    force: bool,
+    insecure_ssl: bool = False,
+) -> None:
     partial, existing = prepare_existing_download(output, force)
     if existing == -1:
         return
 
-    request = build_request(url, existing)
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 Sparse2Unseen-dataset-downloader/1.2 "
+            "(+https://github.com/TaqiyudinMiftah/Sparse2Unseen)"
+        )
+    }
+    if existing:
+        headers["Range"] = f"bytes={existing}-"
+
+    verify: str | bool = False if insecure_ssl else certifi.where()
     print(f"Downloading: {url}")
+    if insecure_ssl:
+        print(
+            "WARNING: TLS certificate verification is disabled for this download.",
+            file=sys.stderr,
+        )
+    else:
+        print(f"TLS CA bundle: {certifi.where()}")
     if existing:
         print(f"Resuming from {human_bytes(existing)}: {partial}")
 
     try:
-        response = urllib.request.urlopen(request, timeout=timeout)
-    except urllib.error.HTTPError as exc:
-        if existing and exc.code == 416:
-            partial.replace(output)
-            return
-        raise RuntimeError(f"HTTP {exc.code} while downloading {url}") from exc
-    except urllib.error.URLError as exc:
-        raise RuntimeError(f"Could not download {url}: {exc.reason}") from exc
+        response = requests.get(
+            url,
+            headers=headers,
+            stream=True,
+            timeout=(timeout, timeout),
+            verify=verify,
+            allow_redirects=True,
+        )
+    except requests.exceptions.SSLError as exc:
+        raise RuntimeError(
+            "TLS certificate verification failed even with the certifi CA bundle. "
+            "Because this is the official UCF URL, you may retry explicitly with "
+            "'--insecure-ssl' if you accept the transport-security tradeoff."
+        ) from exc
+    except requests.RequestException as exc:
+        raise RuntimeError(f"Could not download {url}: {exc}") from exc
 
-    status = getattr(response, "status", response.getcode())
-    content_length = response.headers.get("Content-Length")
-    response_size = int(content_length) if content_length and content_length.isdigit() else None
+    if existing and response.status_code == 416:
+        partial.replace(output)
+        validate_download(output, url)
+        return
 
-    if existing and status == 206:
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as exc:
+        raise RuntimeError(
+            f"HTTP {response.status_code} while downloading {url}"
+        ) from exc
+
+    if existing and response.status_code == 206:
         mode = "ab"
         base = existing
     else:
         mode = "wb"
         base = 0
 
+    content_length = response.headers.get("Content-Length")
+    response_size = int(content_length) if content_length and content_length.isdigit() else None
     total = base + response_size if response_size is not None else None
     started_at = time.monotonic()
     downloaded_this_session = 0
     partial.parent.mkdir(parents=True, exist_ok=True)
 
     try:
-        with response, partial.open(mode) as handle:
-            while True:
-                chunk = response.read(4 * MIB)
+        with partial.open(mode) as handle:
+            for chunk in response.iter_content(chunk_size=4 * MIB):
                 if not chunk:
-                    break
+                    continue
                 handle.write(chunk)
                 downloaded_this_session += len(chunk)
                 print_progress(base + downloaded_this_session, total, started_at)
     except KeyboardInterrupt:
         print(f"\nDownload interrupted. Partial file kept for resume: {partial}")
         raise
+    finally:
+        response.close()
 
     print()
     partial.replace(output)
@@ -284,12 +312,7 @@ def download_gdrive(file_id: str, output: Path, force: bool) -> None:
         ) from exc
 
     print(f"Downloading Google Drive file: {file_id}")
-    result = gdown.download(
-        id=file_id,
-        output=str(output),
-        quiet=False,
-        resume=True,
-    )
+    result = gdown.download(id=file_id, output=str(output), quiet=False, resume=True)
     if result is None:
         raise RuntimeError(
             "gdown could not download the public ShanghaiTech archive. "
@@ -301,22 +324,23 @@ def download_gdrive(file_id: str, output: Path, force: bool) -> None:
     validate_download(output, f"Google Drive file {file_id}")
 
 
-def validate_download(output: Path, source: str) -> None:
-    if not looks_like_zip(output):
-        bad = output.with_suffix(output.suffix + ".bad")
-        output.replace(bad)
-        raise RuntimeError(
-            f"Downloaded content from {source} is not a ZIP archive. "
-            f"Saved the invalid response as {bad}."
-        )
-    print(f"Saved: {output} ({human_bytes(output.stat().st_size)})")
-
-
-def download_dataset(spec: DatasetSpec, output: Path, timeout: int, force: bool) -> None:
+def download_dataset(
+    spec: DatasetSpec,
+    output: Path,
+    timeout: int,
+    force: bool,
+    insecure_ssl: bool,
+) -> None:
     if spec.provider == "http":
         if not spec.url:
             raise RuntimeError(f"Missing HTTP URL for {spec.key}")
-        download_http(spec.url, output, timeout=timeout, force=force)
+        download_http(
+            spec.url,
+            output,
+            timeout=timeout,
+            force=force,
+            insecure_ssl=insecure_ssl,
+        )
         return
     if spec.provider == "gdrive":
         if not spec.gdrive_id:
@@ -351,6 +375,7 @@ def process_dataset(
     force: bool,
     dry_run: bool,
     timeout: int,
+    insecure_ssl: bool,
 ) -> None:
     archive = dest / spec.archive_name
     extract_root = dest / spec.extract_dir
@@ -376,13 +401,18 @@ def process_dataset(
         print("Use --force to redownload/re-extract it.")
         return
 
-    download_dataset(spec, archive, timeout=timeout, force=force)
+    download_dataset(
+        spec,
+        archive,
+        timeout=timeout,
+        force=force,
+        insecure_ssl=insecure_ssl,
+    )
 
     if not extract:
         return
 
     extract_zip(archive, extract_root, force=force)
-
     missing = [
         marker
         for marker in spec.expected_markers
@@ -428,6 +458,7 @@ def main() -> int:
                 force=args.force,
                 dry_run=args.dry_run,
                 timeout=args.timeout,
+                insecure_ssl=args.insecure_ssl,
             )
         except KeyboardInterrupt:
             return 130
