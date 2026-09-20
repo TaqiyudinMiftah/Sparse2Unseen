@@ -14,15 +14,46 @@ The upstream README specifies:
 - preprocessed roots named `sta`, `stb`, `qnrf`
 - 320 x 320 training crops in the published configs
 
-## Bootstrap
+## Automated preparation
+
+After downloading the raw datasets, run:
 
 ```bash
-bash scripts/bootstrap_mpcount.sh
+uv run python scripts/prepare_datasets.py all
 ```
 
-## Preprocess
+The wrapper calls MPCount's own preprocessing scripts rather than reimplementing them. It also handles two integration details automatically:
 
-From `external/MPCount`, follow the upstream commands. Conceptually:
+1. The common ShanghaiTech archive uses `part_A_final` / `part_B_final`, while MPCount's preprocessing logic distinguishes STA from STB using the literal origin-directory basename `part_A` / `part_B`. The wrapper creates safe symlink aliases under `data/raw/.mpcount_alias/`.
+2. Kaggle or other mirrors may add an extra parent directory around UCF-QNRF. The wrapper searches for the directory that actually contains both `Train/` and `Test/`.
+
+Outputs are written to:
+
+```text
+data/processed/mpcount/
+  sta/
+  stb/
+  qnrf/
+```
+
+Those directories are then symlinked into `external/MPCount/data/`, so the upstream configs continue to work unchanged.
+
+The wrapper validates phase sizes using MPCount's checked-in split files, runs `utils/dmap_gen.py`, and generates the nine Sparse2Unseen manifests automatically.
+
+Useful options:
+
+```bash
+# Show paths/commands without processing
+uv run python scripts/prepare_datasets.py all --dry-run
+
+# Rebuild one dataset from scratch
+uv run python scripts/prepare_datasets.py stb --force
+
+# Skip expensive density-map generation temporarily
+uv run python scripts/prepare_datasets.py all --skip-density
+```
+
+For reference, the equivalent upstream commands are still:
 
 ```bash
 python utils/preprocess_data.py --dataset sta --origin-dir /path/to/ShanghaiTech/part_A --data-dir data/sta
@@ -32,8 +63,6 @@ python utils/dmap_gen.py --path data/sta
 python utils/dmap_gen.py --path data/stb
 python utils/dmap_gen.py --path data/qnrf
 ```
-
-Check the current upstream README/scripts before running; preprocessing details may change.
 
 ## Sparse-label MPCount baseline
 
