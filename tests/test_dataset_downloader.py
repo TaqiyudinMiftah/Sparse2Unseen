@@ -58,8 +58,8 @@ def test_human_bytes() -> None:
     assert module.human_bytes(1024 * 1024) == "1.0 MiB"
 
 
-def test_ucf_uses_gdrive_mirror() -> None:
+def test_ucf_uses_official_source() -> None:
     spec = module.DATASETS["ucf_qnrf"]
-    assert spec.provider == "gdrive"
-    assert spec.gdrive_id == "1fLZdOsOXlv2muNB_bXEW6t-IS9MRziL6"
+    assert spec.provider == "http"
+    assert spec.gdrive_id is None
     assert spec.url == "https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip"
