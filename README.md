@@ -104,26 +104,48 @@ The downloader retrieves ShanghaiTech A/B and UCF-QNRF into `data/raw/` by defau
 
 ## 2. Prepare datasets with MPCount
 
-Clone the official MPCount repository into `external/MPCount`:
+Run the preparation wrapper:
 
 ```bash
-bash scripts/bootstrap_mpcount.sh
+uv run python scripts/prepare_datasets.py all
 ```
 
-Then follow `docs/MPCOUNT_INTEGRATION.md` to preprocess the datasets and generate density maps. Raw datasets and processed images are intentionally excluded from git.
+The wrapper automatically:
 
-## 3. Build manifests
+- bootstraps the official MPCount repository when needed;
+- finds the downloaded ShanghaiTech A/B and UCF-QNRF raw trees;
+- creates `part_A` / `part_B` aliases required by MPCount;
+- runs MPCount's official `preprocess_data.py`;
+- generates MPCount density maps;
+- validates train/val/test sample counts against MPCount's split files;
+- links the processed roots into `external/MPCount/data/{sta,stb,qnrf}`;
+- builds all Sparse2Unseen JSONL manifests.
 
-After preprocessing, create a JSONL manifest. Example:
+Processed data is stored once under `data/processed/mpcount/` and remains excluded from git.
+
+To inspect the resolved paths and commands first:
 
 ```bash
-uv run python tools/build_manifest.py \
-  --root /path/to/mpcount/data/stb \
-  --phase train \
-  --output data/manifests/stb_train.jsonl
+uv run python scripts/prepare_datasets.py all --dry-run
 ```
 
-Repeat for source/target test sets.
+See `docs/MPCOUNT_INTEGRATION.md` for details and recovery options.
+
+## 3. Verify manifests
+
+After preparation, the following files should exist:
+
+```text
+data/manifests/sta_train.jsonl
+data/manifests/sta_val.jsonl
+data/manifests/sta_test.jsonl
+data/manifests/stb_train.jsonl
+data/manifests/stb_val.jsonl
+data/manifests/stb_test.jsonl
+data/manifests/qnrf_train.jsonl
+data/manifests/qnrf_val.jsonl
+data/manifests/qnrf_test.jsonl
+```
 
 ## 4. Generate deterministic sparse-label splits
 
