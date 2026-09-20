@@ -24,7 +24,8 @@ def test_sources_are_configured() -> None:
     qnrf = module.DATASETS["ucf_qnrf"]
     assert shanghai.provider == "gdrive"
     assert shanghai.gdrive_id == "1DLgEpNEPp3UqPnEtzW0BSMdS151kRNCs"
-    assert qnrf.provider == "http"
+    assert qnrf.provider == "kaggle"
+    assert qnrf.kaggle_handle == "faihajalamtopu/ucf-qnrf"
     assert qnrf.url and "crcv.ucf.edu" in qnrf.url
 
 
