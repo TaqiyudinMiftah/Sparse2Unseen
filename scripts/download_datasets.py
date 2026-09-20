@@ -2,9 +2,9 @@
 """Download raw ShanghaiTech and UCF-QNRF crowd-counting datasets.
 
 ShanghaiTech is downloaded from a public Google Drive mirror linked by the
-official SASNet repository. UCF-QNRF is downloaded from the canonical UCF CRCV
-archive. The UCF server currently presents a certificate chain that may fail in
-some containers/HPC environments; use --insecure-ssl only as an explicit fallback.
+official SASNet repository. UCF-QNRF defaults to a public Kaggle mirror of the
+raw UCF-QNRF tree so the normal 'all' workflow does not depend on the UCF
+server's problematic TLS chain. The official UCF source remains selectable.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ import requests
 
 MIB = 1024 * 1024
 GIB = 1024 * MIB
-Provider = Literal["http", "gdrive"]
+Provider = Literal["http", "gdrive", "kaggle"]
 
 
 @dataclass(frozen=True)
@@ -38,6 +38,7 @@ class DatasetSpec:
     source_note: str
     url: str | None = None
     gdrive_id: str | None = None
+    kaggle_handle: str | None = None
 
 
 DATASETS: dict[str, DatasetSpec] = {
@@ -58,16 +59,16 @@ DATASETS: dict[str, DatasetSpec] = {
     "ucf_qnrf": DatasetSpec(
         key="ucf_qnrf",
         display_name="UCF-QNRF",
-        provider="http",
+        provider="kaggle",
+        kaggle_handle="faihajalamtopu/ucf-qnrf",
         url="https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip",
         archive_name="UCF-QNRF_ECCV18.zip",
         extract_dir="ucf_qnrf",
         expected_markers=("Train", "Test"),
         approximate_required_space_gib=10.0,
         source_note=(
-            "Canonical archive from the UCF Center for Research in Computer Vision. "
-            "If TLS verification fails in your container, retry explicitly with "
-            "--insecure-ssl."
+            "Public Kaggle mirror of the raw UCF-QNRF tree. "
+            "Canonical source: UCF Center for Research in Computer Vision."
         ),
     ),
 }
@@ -99,15 +100,47 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Disable TLS certificate verification for direct HTTPS downloads. "
-            "Use only as a last resort for the official UCF host."
+            "Only relevant when --ucf-source official is selected."
+        ),
+    )
+    parser.add_argument(
+        "--ucf-source",
+        choices=["kaggle", "official"],
+        default="kaggle",
+        help=(
+            "Transport for UCF-QNRF (default: kaggle). "
+            "Use 'official' to download from UCF CRCV directly."
         ),
     )
     return parser.parse_args()
 
 
-def selected_specs(name: str) -> list[DatasetSpec]:
+def ucf_spec(source: str = "kaggle") -> DatasetSpec:
+    if source == "kaggle":
+        return DATASETS["ucf_qnrf"]
+    if source == "official":
+        base = DATASETS["ucf_qnrf"]
+        return DatasetSpec(
+            key=base.key,
+            display_name=base.display_name,
+            provider="http",
+            url=base.url,
+            archive_name=base.archive_name,
+            extract_dir=base.extract_dir,
+            expected_markers=base.expected_markers,
+            approximate_required_space_gib=base.approximate_required_space_gib,
+            source_note=(
+                "Canonical archive from the UCF Center for Research in Computer Vision."
+            ),
+        )
+    raise ValueError(f"Unknown UCF source: {source}")
+
+
+def selected_specs(name: str, ucf_source: str = "kaggle") -> list[DatasetSpec]:
     if name == "all":
-        return [DATASETS["shanghaitech"], DATASETS["ucf_qnrf"]]
+        return [DATASETS["shanghaitech"], ucf_spec(ucf_source)]
+    if name == "ucf_qnrf":
+        return [ucf_spec(ucf_source)]
     return [DATASETS[name]]
 
 
@@ -328,6 +361,29 @@ def download_gdrive(file_id: str, output: Path, force: bool) -> None:
     validate_download(output, f"Google Drive file {file_id}")
 
 
+def download_kaggle(handle: str, destination: Path, force: bool) -> None:
+    try:
+        import kagglehub
+    except ImportError as exc:
+        raise RuntimeError(
+            "Kaggle download support requires 'kagglehub'. Run 'uv sync' and retry."
+        ) from exc
+
+    destination.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading public Kaggle dataset: {handle}")
+    try:
+        result = kagglehub.dataset_download(
+            handle,
+            output_dir=str(destination),
+            force_download=force,
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            f"Kaggle download failed for {handle}: {exc}"
+        ) from exc
+    print(f"Kaggle dataset available at: {result}")
+
+
 def download_dataset(
     spec: DatasetSpec,
     output: Path,
@@ -351,6 +407,10 @@ def download_dataset(
             raise RuntimeError(f"Missing Google Drive file ID for {spec.key}")
         download_gdrive(spec.gdrive_id, output, force=force)
         return
+    if spec.provider == "kaggle":
+        raise RuntimeError(
+            "Kaggle providers are downloaded directly into the extraction directory."
+        )
     raise RuntimeError(f"Unsupported provider: {spec.provider}")
 
 
@@ -387,16 +447,21 @@ def process_dataset(
     print("\n" + "=" * 72)
     print(spec.display_name)
     print(spec.source_note)
-    print(f"Archive: {archive}")
-    if extract:
-        print(f"Extract to: {extract_root}")
+    if spec.provider == "kaggle":
+        print(f"Download to: {extract_root}")
+    else:
+        print(f"Archive: {archive}")
+        if extract:
+            print(f"Extract to: {extract_root}")
 
     if dry_run:
         if spec.provider == "gdrive":
             print(f"[dry-run] would download Google Drive file {spec.gdrive_id}")
+        elif spec.provider == "kaggle":
+            print(f"[dry-run] would download Kaggle dataset {spec.kaggle_handle}")
         else:
             print(f"[dry-run] would download {spec.url}")
-        if extract:
+        if extract and spec.provider != "kaggle":
             print(f"[dry-run] would extract {archive} to {extract_root}")
         return
 
@@ -405,18 +470,28 @@ def process_dataset(
         print("Use --force to redownload/re-extract it.")
         return
 
-    download_dataset(
-        spec,
-        archive,
-        timeout=timeout,
-        force=force,
-        insecure_ssl=insecure_ssl,
-    )
+    if spec.provider == "kaggle":
+        if not extract:
+            raise RuntimeError(
+                "--no-extract is not supported for Kaggle datasets because "
+                "kagglehub materializes the dataset tree directly."
+            )
+        if not spec.kaggle_handle:
+            raise RuntimeError(f"Missing Kaggle handle for {spec.key}")
+        download_kaggle(spec.kaggle_handle, extract_root, force=force)
+    else:
+        download_dataset(
+            spec,
+            archive,
+            timeout=timeout,
+            force=force,
+            insecure_ssl=insecure_ssl,
+        )
 
-    if not extract:
-        return
+        if not extract:
+            return
 
-    extract_zip(archive, extract_root, force=force)
+        extract_zip(archive, extract_root, force=force)
     missing = [
         marker
         for marker in spec.expected_markers
@@ -431,14 +506,14 @@ def process_dataset(
     else:
         print(f"Verified expected dataset structure under: {extract_root}")
 
-    if not keep_archive:
+    if spec.provider != "kaggle" and not keep_archive:
         archive.unlink(missing_ok=True)
         print(f"Removed archive after successful extraction: {archive}")
 
 
 def main() -> int:
     args = parse_args()
-    specs = selected_specs(args.dataset)
+    specs = selected_specs(args.dataset, args.ucf_source)
     args.dest = args.dest.expanduser().resolve()
 
     print("Sparse2Unseen raw dataset downloader")

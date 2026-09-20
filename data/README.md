@@ -23,19 +23,29 @@ The default destination is `data/raw/`. Use `--dest /path/to/raw` to store the d
 The downloader uses:
 
 - ShanghaiTech A/B: a public `ShanghaiTech.zip` Google Drive mirror linked by the official TencentYoutuResearch SASNet repository. The script uses `gdown` so Google Drive confirmation pages are handled correctly.
-- UCF-QNRF: the canonical University of Central Florida CRCV archive (`UCF-QNRF_ECCV18.zip`). Some containers/HPC systems cannot validate the UCF server's current certificate chain even with `certifi`.
+- UCF-QNRF: by default, the script uses the public Kaggle mirror `faihajalamtopu/ucf-qnrf`, which contains the raw `UCF-QNRF_ECCV18` dataset tree. The canonical source remains the University of Central Florida CRCV dataset page.
 
 Direct HTTP(S) downloads support resume when the server accepts HTTP Range requests. Google Drive downloads use `gdown` resume support. Every downloaded archive is checked for a ZIP signature before extraction, and extracted folders are checked for the expected dataset markers. By default the ZIP is removed after successful extraction; pass `--keep-archive` to retain it.
 
-If UCF-QNRF fails with `CERTIFICATE_VERIFY_FAILED`, retry only that dataset with the explicit fallback:
+The default `all` command does not depend on the UCF server's TLS certificate:
 
 ```bash
-uv run python scripts/download_datasets.py ucf_qnrf --insecure-ssl
+uv run python scripts/download_datasets.py all
 ```
 
-Before doing so, verify that the script prints the canonical UCF URL:
-`https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip`.
-The archive is still validated as a ZIP and the extracted dataset is checked for `Train` and `Test` directories.
+KaggleHub supports unauthenticated downloads for public datasets. If you explicitly want the canonical UCF transport instead, use:
+
+```bash
+uv run python scripts/download_datasets.py ucf_qnrf --ucf-source official
+```
+
+If that official endpoint fails TLS verification in your environment, the existing explicit fallback remains available:
+
+```bash
+uv run python scripts/download_datasets.py ucf_qnrf --ucf-source official --insecure-ssl
+```
+
+Regardless of transport, the extracted UCF-QNRF tree is checked for the expected `Train` and `Test` directories.
 
 If an older checkout left an HTML response such as `data/raw/ShanghaiTech.zip.part`, the downloader automatically removes that stale non-ZIP partial file before retrying from Google Drive. You can also force a clean download with:
 

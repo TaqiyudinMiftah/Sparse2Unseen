@@ -24,7 +24,8 @@ def test_sources_are_configured() -> None:
     qnrf = module.DATASETS["ucf_qnrf"]
     assert shanghai.provider == "gdrive"
     assert shanghai.gdrive_id == "1DLgEpNEPp3UqPnEtzW0BSMdS151kRNCs"
-    assert qnrf.provider == "http"
+    assert qnrf.provider == "kaggle"
+    assert qnrf.kaggle_handle == "faihajalamtopu/ucf-qnrf"
     assert qnrf.url and "crcv.ucf.edu" in qnrf.url
 
 
@@ -58,8 +59,14 @@ def test_human_bytes() -> None:
     assert module.human_bytes(1024 * 1024) == "1.0 MiB"
 
 
-def test_ucf_uses_official_source() -> None:
-    spec = module.DATASETS["ucf_qnrf"]
+def test_ucf_defaults_to_kaggle_source() -> None:
+    spec = module.ucf_spec()
+    assert spec.provider == "kaggle"
+    assert spec.kaggle_handle == "faihajalamtopu/ucf-qnrf"
+
+
+def test_ucf_official_source_is_still_available() -> None:
+    spec = module.ucf_spec("official")
     assert spec.provider == "http"
-    assert spec.gdrive_id is None
+    assert spec.kaggle_handle is None
     assert spec.url == "https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip"
