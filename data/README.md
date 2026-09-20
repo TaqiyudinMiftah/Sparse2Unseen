@@ -23,11 +23,19 @@ The default destination is `data/raw/`. Use `--dest /path/to/raw` to store the d
 The downloader uses:
 
 - ShanghaiTech A/B: a public `ShanghaiTech.zip` Google Drive mirror linked by the official TencentYoutuResearch SASNet repository. The script uses `gdown` so Google Drive confirmation pages are handled correctly.
-- UCF-QNRF: a public Google Drive mirror indexed by the long-running Awesome Crowd Counting dataset list. The canonical dataset source remains the University of Central Florida CRCV page. The Drive mirror avoids the UCF server's certificate-chain failures seen in some containers/HPC systems.
+- UCF-QNRF: the canonical University of Central Florida CRCV archive (`UCF-QNRF_ECCV18.zip`). Some containers/HPC systems cannot validate the UCF server's current certificate chain even with `certifi`.
 
 Direct HTTP(S) downloads support resume when the server accepts HTTP Range requests. Google Drive downloads use `gdown` resume support. Every downloaded archive is checked for a ZIP signature before extraction, and extracted folders are checked for the expected dataset markers. By default the ZIP is removed after successful extraction; pass `--keep-archive` to retain it.
 
-The downloader no longer requires disabling TLS verification for UCF-QNRF in the default path. The official UCF URL remains documented as the canonical source, but the script uses the Drive mirror for transport reliability.
+If UCF-QNRF fails with `CERTIFICATE_VERIFY_FAILED`, retry only that dataset with the explicit fallback:
+
+```bash
+uv run python scripts/download_datasets.py ucf_qnrf --insecure-ssl
+```
+
+Before doing so, verify that the script prints the canonical UCF URL:
+`https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip`.
+The archive is still validated as a ZIP and the extracted dataset is checked for `Train` and `Test` directories.
 
 If an older checkout left an HTML response such as `data/raw/ShanghaiTech.zip.part`, the downloader automatically removes that stale non-ZIP partial file before retrying from Google Drive. You can also force a clean download with:
 
