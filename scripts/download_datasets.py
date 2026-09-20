@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Download raw ShanghaiTech and UCF-QNRF crowd-counting datasets.
 
-ShanghaiTech and UCF-QNRF are downloaded from public Google Drive mirrors used
-by established crowd-counting repositories. The canonical UCF-QNRF source
-remains the official UCF CRCV dataset page, but its TLS chain is unreliable in
-some container/HPC environments.
+ShanghaiTech is downloaded from a public Google Drive mirror linked by the
+official SASNet repository. UCF-QNRF is downloaded from the canonical UCF CRCV
+archive. The UCF server currently presents a certificate chain that may fail in
+some containers/HPC environments; use --insecure-ssl only as an explicit fallback.
 """
 
 from __future__ import annotations
@@ -58,16 +58,16 @@ DATASETS: dict[str, DatasetSpec] = {
     "ucf_qnrf": DatasetSpec(
         key="ucf_qnrf",
         display_name="UCF-QNRF",
-        provider="gdrive",
-        gdrive_id="1fLZdOsOXlv2muNB_bXEW6t-IS9MRziL6",
+        provider="http",
         url="https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip",
         archive_name="UCF-QNRF_ECCV18.zip",
         extract_dir="ucf_qnrf",
         expected_markers=("Train", "Test"),
         approximate_required_space_gib=10.0,
         source_note=(
-            "Public Google Drive mirror indexed by Awesome Crowd Counting. "
-            "Canonical source: UCF Center for Research in Computer Vision."
+            "Canonical archive from the UCF Center for Research in Computer Vision. "
+            "If TLS verification fails in your container, retry explicitly with "
+            "--insecure-ssl."
         ),
     ),
 }
