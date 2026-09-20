@@ -8,6 +8,30 @@ Sparse2Unseen is a research scaffold for studying a specific question:
 
 The initial protocol follows the ShanghaiTech A/B and UCF-QNRF cross-domain setting used by MPCount, then adds sparse source-label regimes (5%, 10%, 40%, 100%).
 
+## Research TL;DR
+
+**Problem:** semi-supervised crowd counting reduces annotation cost but is usually evaluated in-domain, while crowd-counting domain generalization usually assumes a fully labeled source.
+
+**Sparse2Unseen setting:**
+
+```text
+small labeled subset of one source domain
++ remaining unlabeled source images
+-> completely unseen target crowd datasets
+without using target data during training
+```
+
+**Working hypothesis:** pseudo labels intended to improve unseen-domain performance should be not only confident, but also **stable under plausible domain changes**. The current prototype estimates region-level stability across domain-diversified views and down-weights unstable pseudo supervision.
+
+**First research question:** does source-label scarcity damage cross-domain performance more severely than in-domain performance, and does ordinary source-domain SSL mainly recover the source distribution rather than unseen domains?
+
+**Primary baselines:** label-only, Mean Teacher, sparse-label MPCount, and naive SSL + DG.
+
+**Main evaluation:** 5%, 10%, 40%, and 100% source labels; three deterministic sparse-label seeds; in-domain and unseen-domain MAE/RMSE.
+
+For the full research framing and novelty boundaries, see [docs/RESEARCH_TLDR.md](docs/RESEARCH_TLDR.md).  
+For the 30-paper review that motivated the project, see [docs/LITERATURE_REVIEW_2023_2026.md](docs/LITERATURE_REVIEW_2023_2026.md).
+
 ## Research protocol
 
 For source dataset `S`, split the source training set into:
