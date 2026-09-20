@@ -23,17 +23,11 @@ The default destination is `data/raw/`. Use `--dest /path/to/raw` to store the d
 The downloader uses:
 
 - ShanghaiTech A/B: a public `ShanghaiTech.zip` Google Drive mirror linked by the official TencentYoutuResearch SASNet repository. The script uses `gdown` so Google Drive confirmation pages are handled correctly.
-- UCF-QNRF: the University of Central Florida CRCV archive (`UCF-QNRF_ECCV18.zip`). Direct HTTPS downloads use `requests` with the `certifi` CA bundle rather than relying on the host/container CA store.
+- UCF-QNRF: a public Google Drive mirror indexed by the long-running Awesome Crowd Counting dataset list. The canonical dataset source remains the University of Central Florida CRCV page. The Drive mirror avoids the UCF server's certificate-chain failures seen in some containers/HPC systems.
 
 Direct HTTP(S) downloads support resume when the server accepts HTTP Range requests. Google Drive downloads use `gdown` resume support. Every downloaded archive is checked for a ZIP signature before extraction, and extracted folders are checked for the expected dataset markers. By default the ZIP is removed after successful extraction; pass `--keep-archive` to retain it.
 
-If the official UCF server still fails TLS verification even with `certifi`, you can explicitly opt into an insecure transport fallback:
-
-```bash
-uv run python scripts/download_datasets.py ucf_qnrf --insecure-ssl
-```
-
-Only use `--insecure-ssl` for the known official UCF URL after verifying the URL printed by the script. It disables certificate verification for that direct HTTPS download.
+The downloader no longer requires disabling TLS verification for UCF-QNRF in the default path. The official UCF URL remains documented as the canonical source, but the script uses the Drive mirror for transport reliability.
 
 If an older checkout left an HTML response such as `data/raw/ShanghaiTech.zip.part`, the downloader automatically removes that stale non-ZIP partial file before retrying from Google Drive. You can also force a clean download with:
 
