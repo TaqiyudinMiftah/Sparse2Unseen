@@ -2,9 +2,9 @@
 """Download raw ShanghaiTech and UCF-QNRF crowd-counting datasets.
 
 ShanghaiTech is downloaded from a public Google Drive mirror linked by the
-official SASNet repository. UCF-QNRF is downloaded from the canonical UCF CRCV
-archive. The UCF server currently presents a certificate chain that may fail in
-some containers/HPC environments; use --insecure-ssl only as an explicit fallback.
+official SASNet repository. UCF-QNRF defaults to a public Kaggle mirror of the
+raw UCF-QNRF tree so the normal 'all' workflow does not depend on the UCF
+server's problematic TLS chain. The official UCF source remains selectable.
 """
 
 from __future__ import annotations
@@ -38,6 +38,7 @@ class DatasetSpec:
     source_note: str
     url: str | None = None
     gdrive_id: str | None = None
+    kaggle_handle: str | None = None
 
 
 DATASETS: dict[str, DatasetSpec] = {
@@ -512,7 +513,7 @@ def process_dataset(
 
 def main() -> int:
     args = parse_args()
-    specs = selected_specs(args.dataset)
+    specs = selected_specs(args.dataset, args.ucf_source)
     args.dest = args.dest.expanduser().resolve()
 
     print("Sparse2Unseen raw dataset downloader")
