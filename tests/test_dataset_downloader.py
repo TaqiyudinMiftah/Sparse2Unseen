@@ -56,3 +56,10 @@ def test_stale_html_partial_is_removed(tmp_path: Path) -> None:
 def test_human_bytes() -> None:
     assert module.human_bytes(1024) == "1.0 KiB"
     assert module.human_bytes(1024 * 1024) == "1.0 MiB"
+
+
+def test_ucf_uses_gdrive_mirror() -> None:
+    spec = module.DATASETS["ucf_qnrf"]
+    assert spec.provider == "gdrive"
+    assert spec.gdrive_id == "1fLZdOsOXlv2muNB_bXEW6t-IS9MRziL6"
+    assert spec.url == "https://www.crcv.ucf.edu/data/ucf-qnrf/UCF-QNRF_ECCV18.zip"
