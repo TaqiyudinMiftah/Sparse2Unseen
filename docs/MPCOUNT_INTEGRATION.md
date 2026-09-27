@@ -77,8 +77,9 @@ cd external/MPCount
 cd ../..
 ```
 
-The default training config preserves the upstream STB model and optimizer
-settings, including batch size 16. This batch size may exceed the memory of a
+The default training config preserves the current upstream STB model
+(deterministic upsampler) and optimizer settings, including batch size 16.
+This batch size may exceed the memory of a
 12 GB GPU; record any smaller batch size as a deviation from upstream. Do not
 use STA or QNRF performance to choose a checkpoint or hyperparameters.
 
@@ -131,6 +132,100 @@ MPCount logs `mae` and `mse`, where its `mse` is the **mean squared error**;
 report RMSE as the square root of that logged value. The upstream
 `stb_test_qnrf.yml` currently points to `data/sta`; the project-owned QNRF
 config above uses `data/qnrf`.
+
+## Official B checkpoint diagnostic
+
+The official MPCount README provides a B-source checkpoint for the original
+bilinear-upsample model. The current upstream checkout defaults to a different,
+deterministic upsampler. Therefore, use the project-owned diagnostic configs
+with `deterministic: False`, not the training configs above. This diagnostic
+uses target test data only for evaluation-path integrity; its results must not
+select a training checkpoint or tune the later training protocol.
+
+```bash
+mkdir -p data/checkpoints/mpcount
+uv run gdown 1sYGMGNOqj0OUEz-5zE9S1G7hjOzmtJsZ \
+  -O data/checkpoints/mpcount/stb_original.pth
+uv run python scripts/verify_mpcount_checkpoint.py
+cd external/MPCount
+../../.venv/bin/python main.py --task test --config ../../configs/mpcount/stb_official_original_test_stb.yml
+../../.venv/bin/python main.py --task test --config ../../configs/mpcount/stb_official_original_test_sta.yml
+../../.venv/bin/python main.py --task test --config ../../configs/mpcount/stb_official_original_test_qnrf.yml
+cd ../..
+```
+
+The verifier pins the downloaded file's SHA-256 and requires exact state-dict
+keys, shapes, and dtypes before invoking MPCount's otherwise permissive loader.
+STA uses whole-image inference. QNRF uses fixed 1024-pixel tiles and is not
+directly comparable with the official whole-image result. The checkpoint and
+test logs remain ignored local artifacts; only their metrics and hashes belong
+in the report.
+
+## Effective-batch-16 full-label anchor
+
+The predeclared primary full-label anchor keeps the deterministic MPCount model
+from the completed batch-4 run but accumulates four physical batches of four.
+This yields 20 optimizer updates per STB epoch instead of 80, while preserving
+MPCount's existing once-per-epoch scheduler step. Because batch normalization
+still observes physical batches of four, this is an effective-batch-16 adapter,
+not a bitwise reproduction of actual batch-16 training.
+
+```bash
+uv run python scripts/train_mpcount_accum.py \
+  --config configs/mpcount/stb_100_train_accum4.yml
+uv run python scripts/select_mpcount_checkpoint.py \
+  --run-dir external/MPCount/logs/stb_100_seed2023_effbs16
+cd external/MPCount
+../../.venv/bin/python main.py --task test --config ../../configs/mpcount/stb_100_effbs16_test_stb.yml
+../../.venv/bin/python main.py --task test --config ../../configs/mpcount/stb_100_effbs16_test_sta.yml
+../../.venv/bin/python main.py --task test --config ../../configs/mpcount/stb_100_effbs16_test_qnrf.yml
+cd ../..
+```
+
+The adapter refuses to reuse an existing run directory. Only STB train and
+the fixed 80-image labeled STB validation set are available during training
+and checkpoint selection. The 80 validation labels are outside later sparse
+fractions, which refer to the 320-image STB training split only.
+
+### W&B monitoring
+
+W&B is optional; it does not change MPCount's model, optimization, or source-only
+selection protocol. Authenticate on the machine using W&B's interactive login
+or a secret-managed `WANDB_API_KEY`. Never put an API key in a config, command
+argument, report, or Git commit. Set `WANDB_PROJECT` and, if needed,
+`WANDB_ENTITY`; the default project is `Sparse2Unseen` under the logged-in
+account.
+
+For a **new** run, install the optional UV dependency before training and add
+`--wandb` to the command above:
+
+```bash
+uv sync --extra wandb
+uv run python scripts/train_mpcount_accum.py \
+  --config configs/mpcount/stb_100_train_accum4.yml --wandb
+```
+
+This logs each epoch's mean and last-minibatch training loss, STB validation
+MAE/RMSE, optimizer-update count, learning rate, and best STB validation
+checkpoint. W&B system monitoring also records host resource usage. No target
+test metrics, images, labels, or checkpoints are uploaded during training.
+Use a new run name; the training adapter refuses to overwrite existing logs.
+
+An **already-running** MPCount job cannot gain in-process hooks. Stream its
+completed training-log epochs into a separate W&B run without restarting it:
+
+```bash
+uv run --no-project --python .venv/bin/python --with wandb==0.30.0 python \
+  scripts/stream_mpcount_log_to_wandb.py \
+  --run-dir external/MPCount/logs/stb_100_seed2023_effbs16 --follow
+```
+
+The companion replays complete epochs and polls for new ones every 30 seconds;
+it stops after MPCount logs `End training at`. It reports the upstream log's
+**last-minibatch** loss, not a full-epoch average. It is separate from the
+training process and therefore does not measure that process's GPU memory.
+`WANDB_MODE=offline` works for a local test before online syncing. The local
+W&B files are ignored by Git.
 
 ## Sparse-label MPCount baseline
 
