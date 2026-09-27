@@ -136,6 +136,61 @@ def ensure_shanghai_alias(raw_root: Path, part: str, target: Path, dry_run: bool
     return alias
 
 
+def ensure_shanghaitech_ground_truth_alias(target: Path, dry_run: bool) -> None:
+    """Normalize the annotation-directory spelling expected by MPCount.
+
+    The ShanghaiTech archive used by the downloader spells this directory
+    ``ground_truth``, while MPCount constructs paths using ``ground-truth``.
+    Keep the raw data intact and expose the latter as a compatibility symlink.
+    """
+    for phase in ("train_data", "test_data"):
+        phase_root = target / phase
+        images = phase_root / "images"
+        canonical_annotations = phase_root / "ground-truth"
+        alternate_annotations = phase_root / "ground_truth"
+
+        if not images.is_dir():
+            raise FileNotFoundError(
+                f"ShanghaiTech {phase} is missing its images directory: {images}"
+            )
+
+        if canonical_annotations.is_dir():
+            annotations = canonical_annotations
+        elif canonical_annotations.is_symlink():
+            raise RuntimeError(
+                f"ShanghaiTech compatibility alias is broken: {canonical_annotations}"
+            )
+        elif canonical_annotations.exists():
+            raise RuntimeError(
+                f"Expected a directory at {canonical_annotations}, found a file instead."
+            )
+        elif alternate_annotations.is_dir():
+            annotations = alternate_annotations
+            print(f"Annotation alias: {canonical_annotations} -> {annotations}")
+            if not dry_run:
+                canonical_annotations.symlink_to(
+                    annotations.resolve(), target_is_directory=True
+                )
+        else:
+            raise FileNotFoundError(
+                "Could not locate ShanghaiTech annotations for "
+                f"{phase}; expected ground-truth or ground_truth under {phase_root}."
+            )
+
+        missing = [
+            image.name
+            for image in images.glob("*.jpg")
+            if not (annotations / f"GT_{image.stem}.mat").is_file()
+        ]
+        if missing:
+            preview = ", ".join(sorted(missing)[:5])
+            suffix = " ..." if len(missing) > 5 else ""
+            raise RuntimeError(
+                f"ShanghaiTech {phase} has {len(missing)} image(s) without matching "
+                f"annotations in {annotations}: {preview}{suffix}"
+            )
+
+
 def count_nonempty_lines(path: Path) -> int:
     with path.open("r", encoding="utf-8") as handle:
         return sum(1 for line in handle if line.strip())
@@ -230,10 +285,12 @@ def resolve_plans(
     plans: list[DatasetPlan] = []
     if "sta" in keys:
         target = locate_shanghaitech_part(raw_root, "part_A")
+        ensure_shanghaitech_ground_truth_alias(target, dry_run)
         origin = ensure_shanghai_alias(raw_root, "part_A", target, dry_run)
         plans.append(DatasetPlan("sta", "sta", origin, processed_root / "sta", "sta"))
     if "stb" in keys:
         target = locate_shanghaitech_part(raw_root, "part_B")
+        ensure_shanghaitech_ground_truth_alias(target, dry_run)
         origin = ensure_shanghai_alias(raw_root, "part_B", target, dry_run)
         plans.append(DatasetPlan("stb", "stb", origin, processed_root / "stb", "stb"))
     if "qnrf" in keys:
