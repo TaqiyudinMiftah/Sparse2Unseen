@@ -4,6 +4,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
 import torch
 import yaml
 
@@ -25,6 +26,9 @@ class ToyFinal(torch.nn.Module):
         cmap = torch.sigmoid(torch.ones_like(gt_cmaps) * self.weight)
         loss_con = 0.2 * self.weight.square()
         return img1 * self.weight, img2 * self.weight, cmap, cmap, None, loss_con, 0
+
+    def forward(self, img):
+        return img * self.weight, torch.sigmoid(img * self.weight)
 
 
 def make_batch(value: float):
@@ -130,3 +134,35 @@ def test_primary_config_is_source_only_and_twenty_updates():
     assert config["train_loader"]["batch_size"] == 4
     assert config["accumulation_steps"] == 4
     assert 320 // (config["train_loader"]["batch_size"] * config["accumulation_steps"]) == 20
+
+
+def test_wandb_logs_source_validation_after_epoch(tmp_path, monkeypatch):
+    class FakeRun:
+        def __init__(self):
+            self.entries = []
+            self.summary = {}
+
+        def log(self, values, *, step, commit):
+            self.entries.append((values, step, commit))
+
+    fake_run = FakeRun()
+    trainer = new_trainer(tmp_path, monkeypatch, "wandb_test", steps=4)
+    trainer.wandb_run = fake_run
+    model = ToyFinal()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.05)
+    val_img = torch.ones((1, 1, 2, 2))
+    val_batch = (val_img, val_img, torch.zeros((1, 0, 2)), "image", (0, 0, 0, 0))
+    trainer.train_epoch(
+        model, torch.nn.MSELoss(), [make_batch(1.0)], [val_batch],
+        optimizer, None, epoch=0, best_criterion=1e10, best_epoch=-1
+    )
+    assert len(fake_run.entries) == 1
+    values, step, commit = fake_run.entries[0]
+    assert step == 0 and commit is True
+    assert values["optimizer/updates_per_epoch"] == 1
+    assert values["train/mean_loss"] == pytest.approx(
+        values["train/last_batch_loss"], abs=1e-4
+    )
+    assert values["source_val/mae"] >= 0
+    assert values["source_val/rmse"] + 1e-4 >= values["source_val/mae"]
+    assert fake_run.summary["best_source_val_epoch"] == 0

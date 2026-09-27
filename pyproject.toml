@@ -28,6 +28,9 @@ dependencies = [
   "tqdm==4.66.4",
 ]
 
+[project.optional-dependencies]
+wandb = ["wandb==0.30.0"]
+
 [dependency-groups]
 dev = [
   "pytest>=7.4,<9",

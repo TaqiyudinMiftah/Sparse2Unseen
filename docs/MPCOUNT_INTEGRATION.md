@@ -187,6 +187,46 @@ the fixed 80-image labeled STB validation set are available during training
 and checkpoint selection. The 80 validation labels are outside later sparse
 fractions, which refer to the 320-image STB training split only.
 
+### W&B monitoring
+
+W&B is optional; it does not change MPCount's model, optimization, or source-only
+selection protocol. Authenticate on the machine using W&B's interactive login
+or a secret-managed `WANDB_API_KEY`. Never put an API key in a config, command
+argument, report, or Git commit. Set `WANDB_PROJECT` and, if needed,
+`WANDB_ENTITY`; the default project is `Sparse2Unseen` under the logged-in
+account.
+
+For a **new** run, install the optional UV dependency before training and add
+`--wandb` to the command above:
+
+```bash
+uv sync --extra wandb
+uv run python scripts/train_mpcount_accum.py \
+  --config configs/mpcount/stb_100_train_accum4.yml --wandb
+```
+
+This logs each epoch's mean and last-minibatch training loss, STB validation
+MAE/RMSE, optimizer-update count, learning rate, and best STB validation
+checkpoint. W&B system monitoring also records host resource usage. No target
+test metrics, images, labels, or checkpoints are uploaded during training.
+Use a new run name; the training adapter refuses to overwrite existing logs.
+
+An **already-running** MPCount job cannot gain in-process hooks. Stream its
+completed training-log epochs into a separate W&B run without restarting it:
+
+```bash
+uv run --no-project --python .venv/bin/python --with wandb==0.30.0 python \
+  scripts/stream_mpcount_log_to_wandb.py \
+  --run-dir external/MPCount/logs/stb_100_seed2023_effbs16 --follow
+```
+
+The companion replays complete epochs and polls for new ones every 30 seconds;
+it stops after MPCount logs `End training at`. It reports the upstream log's
+**last-minibatch** loss, not a full-epoch average. It is separate from the
+training process and therefore does not measure that process's GPU memory.
+`WANDB_MODE=offline` works for a local test before online syncing. The local
+W&B files are ignored by Git.
+
 ## Sparse-label MPCount baseline
 
 MPCount's dataset implementation enumerates image files in each `train` directory. To create B2 without modifying upstream code, materialize a sparse processed dataset root containing only the labeled training items while keeping source validation/test data unchanged.
