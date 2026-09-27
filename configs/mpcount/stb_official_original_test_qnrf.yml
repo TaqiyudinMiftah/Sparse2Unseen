@@ -1,0 +1,34 @@
+# Official original (bilinear) MPCount B checkpoint; tiled QNRF diagnostic.
+seed: 2023
+version: stb_official_original_test_qnrf_ps1024
+device: 'cuda:0'
+log_para: 1000
+patch_size: 1024
+mode: 'final'
+checkpoint: ../../data/checkpoints/mpcount/stb_original.pth
+model:
+  name: 'final'
+  params:
+    pretrained: False
+    deterministic: False
+    mem_size: 1024
+    mem_dim: 256
+    cls_thrs: 0.5
+    err_thrs: 0.5
+    den_dropout: 0.5
+    cls_dropout: 0.3
+    has_err_loss: False
+test_dataset:
+  name: 'den_cls'
+  params:
+    root: 'data/qnrf'
+    crop_size: 320
+    downsample: 1
+    is_grey: False
+    unit_size: 16
+    pre_resize: 1
+test_loader:
+  batch_size: 1
+  num_workers: 4
+  shuffle: False
+  pin_memory: False

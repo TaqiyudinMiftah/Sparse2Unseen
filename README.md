@@ -216,4 +216,10 @@ Sparse2Unseen does not vendor MPCount source code. The bootstrap script checks o
 
 ## Status
 
-The current scaffold establishes B0/B1 and the first domain-stability prototype. The next milestone is to reproduce `SHB -> SHA/QNRF` with 100% source labels, then rerun at 10% labels before modifying the method.
+The first full-label STB MPCount run and its STB/STA/QNRF test results are
+documented in [the batch-4 report](reports/mpcount_stb_100_seed2023_bs4.md).
+The [official B-checkpoint diagnostic](reports/mpcount_stb_official_checkpoint_audit.md)
+validated the evaluation path. The next milestone is the [predeclared
+effective-batch-16 anchor](docs/MPCOUNT_INTEGRATION.md), followed by fixed 10%
+STB splits. The B0/B1 trainer and domain-stability method remain research
+scaffolds, not publication-ready results.
