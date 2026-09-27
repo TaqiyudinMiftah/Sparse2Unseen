@@ -131,6 +131,9 @@ uv run python scripts/prepare_datasets.py all --dry-run
 
 See `docs/MPCOUNT_INTEGRATION.md` for details and recovery options.
 
+The completed hardware-constrained STB 100% MPCount baseline is recorded in
+[the experiment report](reports/mpcount_stb_100_seed2023_bs4.md).
+
 ## 3. Verify manifests
 
 After preparation, the following files should exist:
