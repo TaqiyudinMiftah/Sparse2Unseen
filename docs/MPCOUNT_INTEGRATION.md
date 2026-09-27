@@ -77,8 +77,9 @@ cd external/MPCount
 cd ../..
 ```
 
-The default training config preserves the upstream STB model and optimizer
-settings, including batch size 16. This batch size may exceed the memory of a
+The default training config preserves the current upstream STB model
+(deterministic upsampler) and optimizer settings, including batch size 16.
+This batch size may exceed the memory of a
 12 GB GPU; record any smaller batch size as a deviation from upstream. Do not
 use STA or QNRF performance to choose a checkpoint or hyperparameters.
 

@@ -11,8 +11,9 @@ of the upstream batch-16 configuration.
 - Final evaluation: STB test (316 images), ShanghaiTech Part A (STA) test (182),
   and UCF-QNRF test (334). No target images or labels were read by the training
   or checkpoint-selection configuration.
-- Model and optimizer: upstream MPCount `final` model and STB settings, seed
-  2023, 180 epochs. The only training-config changes from
+- Model and optimizer: current-upstream MPCount `final` model with its default
+  deterministic upsampler and STB settings, seed 2023, 180 epochs. The only
+  training-config changes from
   [`stb_100_train.yml`](../configs/mpcount/stb_100_train.yml) were batch size
   16 → 4 and a separate run name. A batch-4 training step fit the shared 12 GB
   GPU; batches 8 and 16 exceeded an approximately 8 GB per-process memory cap
@@ -54,8 +55,11 @@ comparison. The model weights were unchanged across all three test sets.
 The [upstream MPCount README](https://github.com/Shimmer93/MPCount) reports
 approximately B→A 99.6/182.9 and B→QNRF 165.6/290.4 (MAE and the paper's
 root-error convention). This run's cross-domain errors are higher. The batch
-size and QNRF inference differences limit attribution; no target-derived
-hyperparameter change was made to improve these numbers.
+size, model-upsampler variant, and QNRF inference differences limit
+attribution; no target-derived hyperparameter change was made to improve these
+numbers. The [official original-checkpoint diagnostic](mpcount_stb_official_checkpoint_audit.md)
+uses the original bilinear-upsample model and confirms that its checkpoint
+loads strictly and gives approximately the published STA result.
 
 ## Local audit trail
 
