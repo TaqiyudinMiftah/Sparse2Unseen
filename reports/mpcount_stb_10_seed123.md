@@ -1,6 +1,7 @@
 # Sparse MPCount B2 — STB 10%, three-seed protocol and results
 
-Status: in progress, 2026-09-27. Do not use any STA or QNRF result to choose
+Status: seed 1 training, 2026-09-27. Seeds 2 and 3 are prepared but not yet
+started. Do not use any STA or QNRF result to choose
 checkpoints, training schedules, augmentation, or other hyperparameters.
 
 ## Frozen protocol
@@ -40,6 +41,9 @@ Each sparse root was validated to expose 32 train, 80 val, and 316 source
 test images. The seed-1 one-epoch smoke run completed 80 minibatches and 20
 optimizer updates, with STB source-validation MAE 42.2647. This smoke score
 does not enter the results table or choose a hyperparameter.
+The full seed-1 run started at 2026-09-27 13:40:40 UTC and is tracked in
+[W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/oowwjjf4); this training run
+logs source-domain metrics only.
 
 ## Results
 
