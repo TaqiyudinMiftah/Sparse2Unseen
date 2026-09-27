@@ -11,7 +11,9 @@ import shutil
 import sys
 from pathlib import Path
 
+import torch
 import torch.nn.functional as F
+from torch.utils.data import DataLoader, SubsetRandomSampler
 import yaml
 
 from sparse2unseen.monitoring.mpcount_log import parse_completed_epochs
@@ -23,6 +25,27 @@ sys.path.insert(0, str(MPCOUNT_ROOT))
 
 from main import load_config  # noqa: E402
 from trainers.dgtrainer import DGTrainer  # noqa: E402
+
+
+def balanced_repeat_loader(
+    loader: DataLoader, *, samples_per_epoch: int, seed: int, options: dict
+) -> DataLoader:
+    """Shuffle exact repeats of each labeled image to retain an update budget."""
+    n_images = len(loader.dataset)
+    if n_images < 1 or samples_per_epoch < n_images or samples_per_epoch % n_images:
+        raise ValueError("train_samples_per_epoch must be a multiple of source train images")
+    if options.get("shuffle") is not True or options.get("drop_last", False):
+        raise ValueError("Balanced repeats require shuffle=True and drop_last=False")
+    repeated_indices = list(range(n_images)) * (samples_per_epoch // n_images)
+    sampler = SubsetRandomSampler(
+        repeated_indices, generator=torch.Generator().manual_seed(seed)
+    )
+    loader_options = {key: value for key, value in options.items() if key != "shuffle"}
+    return DataLoader(
+        loader.dataset, sampler=sampler, collate_fn=loader.collate_fn,
+        worker_init_fn=loader.worker_init_fn, generator=loader.generator,
+        **loader_options,
+    )
 
 
 class AccumDGTrainer(DGTrainer):
@@ -147,6 +170,22 @@ def main() -> int:
     init_params["version"] = version
     if args.epochs is not None:
         task_params["num_epochs"] = args.epochs
+    train_images = len(task_params["train_dataloader"].dataset)
+    val_images = len(task_params["val_dataloader"].dataset)
+    if raw_config.get("expected_train_images", train_images) != train_images:
+        raise ValueError(f"Expected {raw_config['expected_train_images']} train images, found {train_images}")
+    if raw_config.get("expected_val_images", val_images) != val_images:
+        raise ValueError(f"Expected {raw_config['expected_val_images']} source val images, found {val_images}")
+    samples_per_epoch = raw_config.get("train_samples_per_epoch", train_images)
+    if "train_samples_per_epoch" in raw_config:
+        task_params["train_dataloader"] = balanced_repeat_loader(
+            task_params["train_dataloader"], samples_per_epoch=samples_per_epoch,
+            seed=raw_config["seed"], options=raw_config["train_loader"],
+        )
+    microbatches = len(task_params["train_dataloader"])
+    expected_updates = math.ceil(microbatches / accumulation_steps)
+    if raw_config.get("expected_updates_per_epoch", expected_updates) != expected_updates:
+        raise ValueError("Optimizer updates per epoch differ from the configured budget")
     if args.wandb:
         try:
             import wandb
@@ -166,6 +205,10 @@ def main() -> int:
                 "model_deterministic": raw_config["model"]["params"]["deterministic"],
                 "source_domain": "STB",
                 "target_data_used": False,
+                "labeled_train_images": train_images,
+                "source_val_images": val_images,
+                "train_samples_per_epoch": samples_per_epoch,
+                "optimizer_updates_per_epoch": expected_updates,
             },
             dir=str(MPCOUNT_ROOT),
         )
@@ -176,6 +219,10 @@ def main() -> int:
             **init_params, accumulation_steps=accumulation_steps, wandb_run=wandb_run
         )
         shutil.copy2(config, trainer.log_dir)
+        trainer.log(
+            f"Source train images: {train_images}, samples per epoch: {samples_per_epoch}, "
+            f"source val images: {val_images}, optimizer updates per epoch: {expected_updates}"
+        )
         trainer.train(**task_params)
     return 0
 

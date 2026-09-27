@@ -229,16 +229,68 @@ W&B files are ignored by Git.
 
 ## Sparse-label MPCount baseline
 
-MPCount's dataset implementation enumerates image files in each `train` directory. To create B2 without modifying upstream code, materialize a sparse processed dataset root containing only the labeled training items while keeping source validation/test data unchanged.
+MPCount enumerates image files in each `train` directory. B2 uses the three
+committed `splits/stb_10_seed{1,2,3}.json` files: each selects 32 of the 320
+STB training images. The remaining 288 training images are not used by sparse
+MPCount. The same split files must later be used by B0/B1. The 80 fully labeled
+STB validation images are **outside** the 10% training-label fraction and are
+used only for checkpoint selection. No STA or QNRF data enter training or
+model selection.
 
-Use:
+First expose each split as symlinks, without duplicating processed data:
 
 ```bash
-python tools/materialize_sparse_mpcount_root.py \
-  --source-root /path/to/external/MPCount/data/stb \
-  --manifest data/manifests/stb_train.jsonl \
-  --split splits/stb_10_seed1.json \
-  --output-root /path/to/external/MPCount/data/stb_sparse10_seed1
+for seed in 1 2 3; do
+  uv run python tools/materialize_sparse_mpcount_root.py \
+    --source-root data/processed/mpcount/stb \
+    --manifest data/manifests/stb_train.jsonl \
+    --split "splits/stb_10_seed${seed}.json" \
+    --output-root "external/MPCount/data/stb_sparse10_seed${seed}"
+done
 ```
 
-The tool uses symlinks by default, so it does not duplicate the dataset.
+The adapter validates that split IDs exactly partition the manifest, requires
+every selected image/point/density file, preserves source validation/test
+files, and refuses to overwrite an existing output root. Each root must
+contain 32 train, 80 val, and 316 test images.
+
+The full-label anchor had 80 physical minibatches and 20 optimizer updates per
+epoch. Naively loading 32 images would provide only eight minibatches and two
+updates per epoch, confounding label fraction with a tenfold shorter training
+schedule. The sparse configs therefore shuffle **ten visits per labeled image
+per epoch** (with MPCount's stochastic training crops/augmentations), yielding
+320 samples, 80 physical batch-4 minibatches, and 20 accumulated updates per
+epoch. Train for 180 epochs with the same current deterministic model, loss,
+optimizer, scheduler, and physical batch/accumulation settings as the
+full-label anchor. This is repeated labeled-source sampling, not use of
+additional labels or unlabeled images; report it with the baseline.
+
+Run a smoke test under a distinct name, then train each seed:
+
+```bash
+uv run python scripts/train_mpcount_accum.py \
+  --config configs/mpcount/stb_10_train_accum4_seed1.yml \
+  --epochs 1 --version stb_10_seed1_effbs16_smoke
+
+uv sync --extra wandb
+for seed in 1 2 3; do
+  uv run python scripts/train_mpcount_accum.py \
+    --config "configs/mpcount/stb_10_train_accum4_seed${seed}.yml" --wandb
+done
+```
+
+W&B is optional; omit `--wandb` if it is unavailable. Never put a W&B token
+in a config, command argument, log, or commit. Checkpoint selection is based
+only on the fixed 80-image STB validation partition. After each completed
+training run, evaluate its selected checkpoint without changing the model:
+
+```bash
+uv run python scripts/evaluate_sparse_mpcount.py --seed 1 --domain all
+```
+
+Repeat for seeds 2 and 3. The wrapper uses the same test roots, deterministic
+model, 10000-pixel STB/STA whole-image inference, and 1024-pixel QNRF tiles
+as the full-label anchor. Record STB/STA/QNRF MAE and RMSE for each seed, then
+mean ± sample standard deviation. The 100% reference is currently one run
+(seed 2023), so relative degradation against it is descriptive rather than a
+paired three-seed estimate.

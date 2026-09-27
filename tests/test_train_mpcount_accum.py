@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -134,6 +135,45 @@ def test_primary_config_is_source_only_and_twenty_updates():
     assert config["train_loader"]["batch_size"] == 4
     assert config["accumulation_steps"] == 4
     assert 320 // (config["train_loader"]["batch_size"] * config["accumulation_steps"]) == 20
+
+
+def test_balanced_repeats_keep_twenty_updates_and_all_labeled_images():
+    dataset = torch.utils.data.TensorDataset(torch.arange(32))
+    options = {"batch_size": 4, "num_workers": 0, "shuffle": True, "pin_memory": False}
+    original = torch.utils.data.DataLoader(dataset, **options)
+    repeated = module.balanced_repeat_loader(
+        original, samples_per_epoch=320, seed=1, options=options
+    )
+    assert len(repeated) == 80
+    assert len(repeated) // 4 == 20
+    sampled = Counter(index for batch in repeated for index in batch[0].tolist())
+    assert sampled == {index: 10 for index in range(32)}
+
+
+def test_balanced_repeats_require_an_exact_multiple():
+    dataset = torch.utils.data.TensorDataset(torch.arange(32))
+    options = {"batch_size": 4, "num_workers": 0, "shuffle": True}
+    original = torch.utils.data.DataLoader(dataset, **options)
+    with pytest.raises(ValueError, match="multiple"):
+        module.balanced_repeat_loader(
+            original, samples_per_epoch=319, seed=1, options=options
+        )
+
+
+@pytest.mark.parametrize("seed", [1, 2, 3])
+def test_sparse_config_has_only_source_data_and_matched_update_budget(seed):
+    path = SCRIPT.parents[1] / f"configs/mpcount/stb_10_train_accum4_seed{seed}.yml"
+    config = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert config["seed"] == seed
+    assert config["expected_train_images"] == 32
+    assert config["expected_val_images"] == 80
+    assert config["train_samples_per_epoch"] == 320
+    assert config["expected_updates_per_epoch"] == 20
+    assert config["train_dataset"]["params"]["root"] == f"data/stb_sparse10_seed{seed}"
+    assert config["val_dataset"]["params"]["root"] == f"data/stb_sparse10_seed{seed}"
+    assert config["accumulation_steps"] == 4
+    assert config["train_loader"]["batch_size"] == 4
+    assert config["model"]["params"]["deterministic"] is True
 
 
 def test_wandb_logs_source_validation_after_epoch(tmp_path, monkeypatch):
