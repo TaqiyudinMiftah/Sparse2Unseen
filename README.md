@@ -219,7 +219,10 @@ Sparse2Unseen does not vendor MPCount source code. The bootstrap script checks o
 The first full-label STB MPCount run and its STB/STA/QNRF test results are
 documented in [the batch-4 report](reports/mpcount_stb_100_seed2023_bs4.md).
 The [official B-checkpoint diagnostic](reports/mpcount_stb_official_checkpoint_audit.md)
-validated the evaluation path. The next milestone is the [predeclared
-effective-batch-16 anchor](docs/MPCOUNT_INTEGRATION.md), followed by fixed 10%
-STB splits. The B0/B1 trainer and domain-stability method remain research
-scaffolds, not publication-ready results.
+validated the evaluation path. The [effective-batch-16 full-label
+anchor](reports/mpcount_stb_100_seed2023_effbs16.md) completed 180 epochs and
+was selected on STB validation only. Fixed 10% STB training splits for seeds
+1, 2, and 3 are in `splits/`; each contains 32 labeled images out of 320. The
+80-image labeled STB validation set is outside that sparse-training fraction.
+The B0/B1 trainer and domain-stability method remain research scaffolds, not
+publication-ready results.
