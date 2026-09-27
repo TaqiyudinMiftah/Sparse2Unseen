@@ -1,6 +1,6 @@
 # Sparse MPCount B2 — STB 10%, three-seed protocol and results
 
-Status: seed 1 training, 2026-09-27. Seeds 2 and 3 are prepared but not yet
+Status: seeds 1 and 2 training, 2026-09-27. Seed 3 is prepared but not yet
 started. Do not use any STA or QNRF result to choose
 checkpoints, training schedules, augmentation, or other hyperparameters.
 
@@ -44,6 +44,9 @@ does not enter the results table or choose a hyperparameter.
 The full seed-1 run started at 2026-09-27 13:40:40 UTC and is tracked in
 [W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/oowwjjf4); this training run
 logs source-domain metrics only.
+The full seed-2 run started at 2026-09-27 13:43:20 UTC and is tracked in
+[W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/0cubr7tj); it follows the same
+source-only protocol on the second shared GPU.
 
 ## Results
 
