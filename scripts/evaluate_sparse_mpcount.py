@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+import re
 import sys
 
 import yaml
@@ -21,15 +22,26 @@ from main import load_config  # noqa: E402
 from trainers.dgtrainer import DGTrainer  # noqa: E402
 
 
-def build_eval_config(seed: int, domain: str, checkpoint: Path) -> dict:
+def validate_run_version(seed: int, version: str | None) -> str:
+    canonical = f"stb_10_seed{seed}_effbs16"
+    version = version or canonical
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", version):
+        raise ValueError("Run version must be a single safe path component")
+    if version != canonical and not version.startswith(canonical + "_"):
+        raise ValueError("Run version does not match the sparse seed")
+    return version
+
+
+def build_eval_config(seed: int, domain: str, checkpoint: Path, run_version: str | None = None) -> dict:
     if seed not in (1, 2, 3):
         raise ValueError("Expected a committed sparse split seed: 1, 2, or 3")
     if domain not in ("stb", "sta", "qnrf"):
         raise ValueError("Unknown test domain")
+    run_version = validate_run_version(seed, run_version)
     template = PROJECT_ROOT / f"configs/mpcount/stb_100_effbs16_test_{domain}.yml"
     config = yaml.safe_load(template.read_text(encoding="utf-8"))
     config["seed"] = seed
-    config["version"] = f"stb_10_seed{seed}_effbs16_test_{domain}"
+    config["version"] = f"{run_version}_test_{domain}"
     if domain == "qnrf":
         config["version"] += "_ps1024"
     config["checkpoint"] = str(checkpoint.resolve(strict=True))
@@ -39,15 +51,17 @@ def build_eval_config(seed: int, domain: str, checkpoint: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, choices=(1, 2, 3), required=True)
+    parser.add_argument("--run-version", help="Explicit clean-retry run name; defaults to the canonical run")
     parser.add_argument(
         "--domain", choices=("stb", "sta", "qnrf", "all"), default="all"
     )
     args = parser.parse_args()
 
-    train_dir = MPCOUNT_ROOT / "logs" / f"stb_10_seed{args.seed}_effbs16"
+    run_version = validate_run_version(args.seed, args.run_version)
+    train_dir = MPCOUNT_ROOT / "logs" / run_version
     checkpoint = select_checkpoint(train_dir)
     domains = ("stb", "sta", "qnrf") if args.domain == "all" else (args.domain,)
-    configs = [build_eval_config(args.seed, domain, checkpoint) for domain in domains]
+    configs = [build_eval_config(args.seed, domain, checkpoint, run_version) for domain in domains]
     for config in configs:
         destination = MPCOUNT_ROOT / "logs" / config["version"]
         if destination.exists():

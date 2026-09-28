@@ -294,3 +294,57 @@ as the full-label anchor. Record STB/STA/QNRF MAE and RMSE for each seed, then
 mean ± sample standard deviation. The 100% reference is currently one run
 (seed 2023), so relative degradation against it is descriptive rather than a
 paired three-seed estimate.
+
+### Memory-gated clean retries
+
+MPCount checkpoints contain model weights, not the optimizer/scheduler/RNG
+state needed for an exact resume. Preserve interrupted runs and use a distinct
+name for an unchanged, clean 180-epoch retry. On a shared GPU machine, queue
+the retry until one GPU has at least 7168 MiB free for three consecutive
+30-second polls:
+
+```bash
+uv run --no-sync python scripts/queue_sparse_mpcount.py \
+  --seed 3 --run-version stb_10_seed3_effbs16_retry1 \
+  --min-free-mib 7168 --poll-seconds 30 --stable-checks 3 \
+  --wandb --evaluate
+```
+
+The detached worker continues after the invoking shell exits. It never
+terminates other users' jobs. This memory gate is best-effort, not a GPU
+reservation: another job can allocate memory after the checks. Failed training
+is recorded without an automatic retry or target evaluation. W&B starts with
+training, using the existing machine authentication without storing credentials
+in queue metadata.
+
+The queue validates the 32-image labeled split and fixed 80-image source
+validation partition, records input hashes and checkout commits, and refuses
+to launch if frozen code/configs change. No target data are opened during
+training or selection. After successful training, `--evaluate` waits for memory
+again, selects the checkpoint using source validation only, and runs the fixed
+STB/STA whole-image and QNRF 1024-tile tests under separate retry log names.
+
+Inspect the local queue metadata and console output:
+
+```bash
+uv run --no-sync python -m json.tool runs/queues/stb_10_seed3_effbs16_retry1/status.json
+tail -n 20 runs/queues/stb_10_seed3_effbs16_retry1/queue.log
+tail -n 20 runs/queues/stb_10_seed3_effbs16_retry1/training.log
+```
+
+`request.json` stores the frozen request; `training.log` and `evaluation.log`
+capture child output, and `status.json` records PID, state, and exit code.
+These artifacts remain ignored by Git. Cancel only this queued job (or its
+own child, if running) with:
+
+```bash
+uv run --no-sync python scripts/queue_sparse_mpcount.py \
+  --cancel stb_10_seed3_effbs16_retry1
+```
+
+To evaluate a completed clean retry manually:
+
+```bash
+uv run --no-sync python scripts/evaluate_sparse_mpcount.py \
+  --seed 3 --run-version stb_10_seed3_effbs16_retry1 --domain all
+```
