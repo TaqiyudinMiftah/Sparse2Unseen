@@ -1,7 +1,9 @@
 # Sparse MPCount B2 — STB 10%, three-seed protocol and results
 
-Status: seeds 1 and 2 completed training and all test evaluations; seed 3 is
-interrupted after epoch 149, 2026-09-28. The three-seed result is not complete.
+Status: seeds 1 and 2 completed training and all test evaluations. The original
+seed-3 run was interrupted after epoch 149; an unchanged clean retry was
+queued at 2026-09-28 09:00:10 UTC and is waiting for GPU memory. The three-seed
+result is not complete.
 Do not use any STA or QNRF result to choose
 checkpoints, training schedules, augmentation, or other hyperparameters.
 
@@ -71,6 +73,39 @@ selection guard remains in force. MPCount saves model weights only, so
 optimizer, scheduler, and RNG state needed for an exact training resume are
 unavailable. Preserve the interrupted artifacts and perform a separately
 audited clean retry with the unchanged recipe when GPU memory permits.
+
+### Seed-3 clean retry queue
+
+At 2026-09-28 09:00:10 UTC, a detached queue worker was activated for
+`stb_10_seed3_effbs16_retry1`, using project commit
+`5e0df2736b4fe0ff7888d9ae0d3cdd53b4b96345`. The original run, weights,
+logs, and crashed W&B record are preserved. The retry starts from the same
+pretrained initialization with seed 3 and the unchanged 180-epoch config;
+it is not an exact resume and does not replace the original audit.
+
+The queue requires at least 7168 MiB free on one GPU for three consecutive
+30-second polls. Its initial inventory showed 4491 MiB free on GPU 0 and
+1350 MiB on GPU 1, so training had not started at activation. This is a
+best-effort memory gate, not an exclusive GPU reservation; other users and
+their processes are not modified. The worker is detached from the invoking
+shell and records child output and exit codes, without automatically retrying
+a failure.
+
+Local audit artifacts are under
+`runs/queues/stb_10_seed3_effbs16_retry1/`: `request.json` records commits and
+SHA-256 hashes of the split, training config, evaluation templates, lockfile,
+and adapter code; `status.json` records the current state and PIDs;
+`training.log` and `evaluation.log` are created when those phases start.
+The queue refuses to launch if frozen input hashes or the upstream checkout
+change. These runtime artifacts and credentials are not committed to Git.
+
+W&B source-only monitoring is enabled when training starts. After successful
+completion, the worker waits for GPU memory again and evaluates only the
+STB-validation-selected checkpoint on STB/STA/QNRF using the fixed inference
+settings. Retry test logs use the retry prefix to avoid overwriting earlier
+runs. No target evaluation of the interrupted checkpoint is scheduled. A new
+W&B URL and final metrics remain pending. Queue, cancellation, and
+retry-specific evaluation tests pass as part of the 74-test suite.
 
 ## Source-only checkpoint selection
 
