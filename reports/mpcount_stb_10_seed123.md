@@ -1,7 +1,8 @@
 # Sparse MPCount B2 — STB 10%, three-seed protocol and results
 
 Status: seeds 1 and 2 completed training and all test evaluations; seed 3 is
-training, 2026-09-28. Do not use any STA or QNRF result to choose
+interrupted after epoch 149, 2026-09-28. The three-seed result is not complete.
+Do not use any STA or QNRF result to choose
 checkpoints, training schedules, augmentation, or other hyperparameters.
 
 ## Frozen protocol
@@ -52,6 +53,24 @@ at 2026-09-27 17:56:17 UTC; seed 2 ended at 2026-09-27 17:50:53 UTC.
 Seed 3 started at 2026-09-28 02:11:18 UTC on GPU 0 and is tracked in
 [W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/wzkb55yg). Its predeclared
 training config is unchanged after viewing the seed-1/2 test results.
+
+### Seed-3 interruption audit
+
+At the 2026-09-28 08:30 UTC check, the seed-3 process was absent and W&B
+reported `crashed`. The local training log last changed at 05:44:20 UTC and
+ends after completed epoch 149 (150 of the planned 180 epochs), without a
+`Best epoch` / `End training` completion record. W&B's last synced epoch is
+148. No traceback or CUDA out-of-memory error was found in the saved console
+or W&B logs, and the system journal is not accessible to this user; the cause
+is therefore unconfirmed.
+
+The best source-validation MAE observed before interruption was 10.1391 at
+epoch 135. This incomplete-run checkpoint is **not** treated as a final
+seed-3 result and has not been evaluated on targets. The completed-run
+selection guard remains in force. MPCount saves model weights only, so
+optimizer, scheduler, and RNG state needed for an exact training resume are
+unavailable. Preserve the interrupted artifacts and perform a separately
+audited clean retry with the unchanged recipe when GPU memory permits.
 
 ## Source-only checkpoint selection
 
