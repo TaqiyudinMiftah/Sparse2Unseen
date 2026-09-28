@@ -1,7 +1,7 @@
 # Sparse MPCount B2 — STB 10%, three-seed protocol and results
 
-Status: seeds 1 and 2 training, 2026-09-27. Seed 3 is prepared but not yet
-started. Do not use any STA or QNRF result to choose
+Status: seeds 1 and 2 completed training; test evaluation is in progress,
+2026-09-28. Seed 3 is prepared but not yet started. Do not use any STA or QNRF result to choose
 checkpoints, training schedules, augmentation, or other hyperparameters.
 
 ## Frozen protocol
@@ -47,6 +47,22 @@ logs source-domain metrics only.
 The full seed-2 run started at 2026-09-27 13:43:20 UTC and is tracked in
 [W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/0cubr7tj); it follows the same
 source-only protocol on the second shared GPU.
+Both runs completed 180 epochs and W&B reports them as finished. Seed 1 ended
+at 2026-09-27 17:56:17 UTC; seed 2 ended at 2026-09-27 17:50:53 UTC.
+
+## Source-only checkpoint selection
+
+| Seed | Selected epoch | STB validation MAE / RMSE | Checkpoint SHA-256 |
+| ---: | ---: | ---: | --- |
+| 1 | 166 | 11.2401 / 20.6144 | `8932b730aeb62e9555042f1093956e5e991f386ef93c22e89da071d7e614ddb8` |
+| 2 | 119 | 11.7258 / 22.2547 | `80ed8abaff54f51d02134ca32470b20dbe61cf70b14298bc4c087d1b608142a3` |
+| 3 | pending | pending | pending |
+
+The selected weights are local files under
+`external/MPCount/logs/stb_10_seed{seed}_effbs16/best_{epoch}.pth`.
+These validation metrics are not test results. RMSE is the square root of the
+logged mean squared error. Only the selected checkpoint is evaluated; target
+performance never selects among epochs.
 
 ## Results
 
@@ -57,15 +73,23 @@ source-validation-selected checkpoint completes training and is evaluated.
 | Method | Source-training labels | Seed | STB test | STA test | QNRF test, 1024-pixel tiles |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | MPCount full-label anchor | 320 / 320 | 2023 | 7.7991 / 13.3822 | 110.6855 / 181.4593 | 242.7133 / 418.9947 |
-| MPCount sparse | 32 / 320 | 1 | pending | pending | pending |
-| MPCount sparse | 32 / 320 | 2 | pending | pending | pending |
+| MPCount sparse | 32 / 320 | 1 | 8.9392 / 15.8303 | 102.2181 / 172.8133 | pending |
+| MPCount sparse | 32 / 320 | 2 | 9.9386 / 16.8172 | 116.4645 / 205.1531 | pending |
 | MPCount sparse | 32 / 320 | 3 | pending | pending | pending |
 | MPCount sparse mean ± sample SD | 32 / 320 | 1–3 | pending | pending | pending |
+
+Raw MPCount mean squared errors are retained for the RMSE calculation:
+
+| Seed | STB test logged `mse` | STA test logged `mse` | QNRF test logged `mse` |
+| ---: | ---: | ---: | ---: |
+| 1 | 250.5985 | 29864.4378 | pending |
+| 2 | 282.8193 | 42087.7813 | pending |
+| 3 | pending | pending | pending |
 
 For each domain, report absolute MAE degradation as sparse MAE minus the
 full-label anchor MAE, and relative degradation as that difference divided by
 the full-label anchor MAE. Compare source and unseen degradation together.
 Because the full-label reference has one seed and the sparse runs use both
 split and model seeds 1–3, these are descriptive comparisons, not a paired
-seed-controlled significance test. The raw source-validation selection metrics
-and checkpoint hashes will be added when each run completes.
+seed-controlled significance test. Source-validation selection metrics and
+checkpoint hashes are recorded above as each run completes.
