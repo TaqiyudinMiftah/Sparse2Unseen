@@ -1,7 +1,7 @@
 # Sparse MPCount B2 — STB 10%, three-seed protocol and results
 
-Status: seeds 1 and 2 completed training; test evaluation is in progress,
-2026-09-28. Seed 3 is prepared but not yet started. Do not use any STA or QNRF result to choose
+Status: seeds 1 and 2 completed training and all test evaluations; seed 3 is
+training, 2026-09-28. Do not use any STA or QNRF result to choose
 checkpoints, training schedules, augmentation, or other hyperparameters.
 
 ## Frozen protocol
@@ -49,6 +49,9 @@ The full seed-2 run started at 2026-09-27 13:43:20 UTC and is tracked in
 source-only protocol on the second shared GPU.
 Both runs completed 180 epochs and W&B reports them as finished. Seed 1 ended
 at 2026-09-27 17:56:17 UTC; seed 2 ended at 2026-09-27 17:50:53 UTC.
+Seed 3 started at 2026-09-28 02:11:18 UTC on GPU 0 and is tracked in
+[W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/wzkb55yg). Its predeclared
+training config is unchanged after viewing the seed-1/2 test results.
 
 ## Source-only checkpoint selection
 
@@ -67,14 +70,14 @@ performance never selects among epochs.
 ## Results
 
 The full-label reference is a single seed-2023 run, not a paired three-seed
-estimate. Test scores are MAE / RMSE; target columns remain blank until a
+estimate. Test scores are MAE / RMSE; pending rows remain blank until a
 source-validation-selected checkpoint completes training and is evaluated.
 
 | Method | Source-training labels | Seed | STB test | STA test | QNRF test, 1024-pixel tiles |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | MPCount full-label anchor | 320 / 320 | 2023 | 7.7991 / 13.3822 | 110.6855 / 181.4593 | 242.7133 / 418.9947 |
-| MPCount sparse | 32 / 320 | 1 | 8.9392 / 15.8303 | 102.2181 / 172.8133 | pending |
-| MPCount sparse | 32 / 320 | 2 | 9.9386 / 16.8172 | 116.4645 / 205.1531 | pending |
+| MPCount sparse | 32 / 320 | 1 | 8.9392 / 15.8303 | 102.2181 / 172.8133 | 250.3209 / 410.7431 |
+| MPCount sparse | 32 / 320 | 2 | 9.9386 / 16.8172 | 116.4645 / 205.1531 | 270.0684 / 437.8901 |
 | MPCount sparse | 32 / 320 | 3 | pending | pending | pending |
 | MPCount sparse mean ± sample SD | 32 / 320 | 1–3 | pending | pending | pending |
 
@@ -82,9 +85,35 @@ Raw MPCount mean squared errors are retained for the RMSE calculation:
 
 | Seed | STB test logged `mse` | STA test logged `mse` | QNRF test logged `mse` |
 | ---: | ---: | ---: | ---: |
-| 1 | 250.5985 | 29864.4378 | pending |
-| 2 | 282.8193 | 42087.7813 | pending |
+| 1 | 250.5985 | 29864.4378 | 168709.8849 |
+| 2 | 282.8193 | 42087.7813 | 191747.7812 |
 | 3 | pending | pending | pending |
+
+Seed 1 completed all final tests at 2026-09-28 02:10:43 UTC; seed 2 at
+2026-09-28 02:10:19 UTC. Test logs and their effective configs are in ignored
+local directories named `external/MPCount/logs/stb_10_seed{seed}_effbs16_test_{domain}`;
+the QNRF directory additionally ends in `_ps1024`. All domains used the same
+source-selected checkpoint within each seed.
+
+## Descriptive MAE degradation against the full-label anchor
+
+Each cell is absolute MAE change / relative percentage change. A negative
+change means that the sparse run scored better than the reference run on that
+test set; it does not justify choosing that seed or tuning on the target.
+
+| Seed | STB | STA | QNRF, 1024-pixel tiles |
+| ---: | ---: | ---: | ---: |
+| 1 | +1.1401 / +14.62% | -8.4674 / -7.65% | +7.6076 / +3.13% |
+| 2 | +2.1395 / +27.43% | +5.7790 / +5.22% | +27.3551 / +11.27% |
+| 3 | pending | pending | pending |
+
+The first two seeds consistently worsen source STB counting, but STA is
+seed-dependent and QNRF relative MAE degradation is smaller than STB's. These
+partial results do **not** establish that source label scarcity harms unseen
+performance disproportionately. Do not interpret a favorable seed as a
+general sparse-label advantage. The third seed and the planned B0/B1
+comparisons are still needed; all three seed results will be reported without
+selection.
 
 For each domain, report absolute MAE degradation as sparse MAE minus the
 full-label anchor MAE, and relative degradation as that difference divided by
