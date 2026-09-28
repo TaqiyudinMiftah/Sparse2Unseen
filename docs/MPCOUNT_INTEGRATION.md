@@ -229,16 +229,122 @@ W&B files are ignored by Git.
 
 ## Sparse-label MPCount baseline
 
-MPCount's dataset implementation enumerates image files in each `train` directory. To create B2 without modifying upstream code, materialize a sparse processed dataset root containing only the labeled training items while keeping source validation/test data unchanged.
+MPCount enumerates image files in each `train` directory. B2 uses the three
+committed `splits/stb_10_seed{1,2,3}.json` files: each selects 32 of the 320
+STB training images. The remaining 288 training images are not used by sparse
+MPCount. The same split files must later be used by B0/B1. The 80 fully labeled
+STB validation images are **outside** the 10% training-label fraction and are
+used only for checkpoint selection. No STA or QNRF data enter training or
+model selection.
 
-Use:
+First expose each split as symlinks, without duplicating processed data:
 
 ```bash
-python tools/materialize_sparse_mpcount_root.py \
-  --source-root /path/to/external/MPCount/data/stb \
-  --manifest data/manifests/stb_train.jsonl \
-  --split splits/stb_10_seed1.json \
-  --output-root /path/to/external/MPCount/data/stb_sparse10_seed1
+for seed in 1 2 3; do
+  uv run python tools/materialize_sparse_mpcount_root.py \
+    --source-root data/processed/mpcount/stb \
+    --manifest data/manifests/stb_train.jsonl \
+    --split "splits/stb_10_seed${seed}.json" \
+    --output-root "external/MPCount/data/stb_sparse10_seed${seed}"
+done
 ```
 
-The tool uses symlinks by default, so it does not duplicate the dataset.
+The adapter validates that split IDs exactly partition the manifest, requires
+every selected image/point/density file, preserves source validation/test
+files, and refuses to overwrite an existing output root. Each root must
+contain 32 train, 80 val, and 316 test images.
+
+The full-label anchor had 80 physical minibatches and 20 optimizer updates per
+epoch. Naively loading 32 images would provide only eight minibatches and two
+updates per epoch, confounding label fraction with a tenfold shorter training
+schedule. The sparse configs therefore shuffle **ten visits per labeled image
+per epoch** (with MPCount's stochastic training crops/augmentations), yielding
+320 samples, 80 physical batch-4 minibatches, and 20 accumulated updates per
+epoch. Train for 180 epochs with the same current deterministic model, loss,
+optimizer, scheduler, and physical batch/accumulation settings as the
+full-label anchor. This is repeated labeled-source sampling, not use of
+additional labels or unlabeled images; report it with the baseline.
+
+Run a smoke test under a distinct name, then train each seed:
+
+```bash
+uv run python scripts/train_mpcount_accum.py \
+  --config configs/mpcount/stb_10_train_accum4_seed1.yml \
+  --epochs 1 --version stb_10_seed1_effbs16_smoke
+
+uv sync --extra wandb
+for seed in 1 2 3; do
+  uv run python scripts/train_mpcount_accum.py \
+    --config "configs/mpcount/stb_10_train_accum4_seed${seed}.yml" --wandb
+done
+```
+
+W&B is optional; omit `--wandb` if it is unavailable. Never put a W&B token
+in a config, command argument, log, or commit. Checkpoint selection is based
+only on the fixed 80-image STB validation partition. After each completed
+training run, evaluate its selected checkpoint without changing the model:
+
+```bash
+uv run python scripts/evaluate_sparse_mpcount.py --seed 1 --domain all
+```
+
+Repeat for seeds 2 and 3. The wrapper uses the same test roots, deterministic
+model, 10000-pixel STB/STA whole-image inference, and 1024-pixel QNRF tiles
+as the full-label anchor. Record STB/STA/QNRF MAE and RMSE for each seed, then
+mean ± sample standard deviation. The 100% reference is currently one run
+(seed 2023), so relative degradation against it is descriptive rather than a
+paired three-seed estimate.
+
+### Memory-gated clean retries
+
+MPCount checkpoints contain model weights, not the optimizer/scheduler/RNG
+state needed for an exact resume. Preserve interrupted runs and use a distinct
+name for an unchanged, clean 180-epoch retry. On a shared GPU machine, queue
+the retry until one GPU has at least 7168 MiB free for three consecutive
+30-second polls:
+
+```bash
+uv run --no-sync python scripts/queue_sparse_mpcount.py \
+  --seed 3 --run-version stb_10_seed3_effbs16_retry1 \
+  --min-free-mib 7168 --poll-seconds 30 --stable-checks 3 \
+  --wandb --evaluate
+```
+
+The detached worker continues after the invoking shell exits. It never
+terminates other users' jobs. This memory gate is best-effort, not a GPU
+reservation: another job can allocate memory after the checks. Failed training
+is recorded without an automatic retry or target evaluation. W&B starts with
+training, using the existing machine authentication without storing credentials
+in queue metadata.
+
+The queue validates the 32-image labeled split and fixed 80-image source
+validation partition, records input hashes and checkout commits, and refuses
+to launch if frozen code/configs change. No target data are opened during
+training or selection. After successful training, `--evaluate` waits for memory
+again, selects the checkpoint using source validation only, and runs the fixed
+STB/STA whole-image and QNRF 1024-tile tests under separate retry log names.
+
+Inspect the local queue metadata and console output:
+
+```bash
+uv run --no-sync python -m json.tool runs/queues/stb_10_seed3_effbs16_retry1/status.json
+tail -n 20 runs/queues/stb_10_seed3_effbs16_retry1/queue.log
+tail -n 20 runs/queues/stb_10_seed3_effbs16_retry1/training.log
+```
+
+`request.json` stores the frozen request; `training.log` and `evaluation.log`
+capture child output, and `status.json` records PID, state, and exit code.
+These artifacts remain ignored by Git. Cancel only this queued job (or its
+own child, if running) with:
+
+```bash
+uv run --no-sync python scripts/queue_sparse_mpcount.py \
+  --cancel stb_10_seed3_effbs16_retry1
+```
+
+To evaluate a completed clean retry manually:
+
+```bash
+uv run --no-sync python scripts/evaluate_sparse_mpcount.py \
+  --seed 3 --run-version stb_10_seed3_effbs16_retry1 --domain all
+```
