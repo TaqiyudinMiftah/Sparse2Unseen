@@ -148,3 +148,33 @@ checkpoint selection, the fixed student/EMA model choice, exact test IDs/counts,
 and MAE/MSE/RMSE recomputed from saved per-image predictions. Partial or inconsistent
 results cannot enter final statistics. This post-evaluation tooling is outside
 the frozen training path and does not alter model selection or hyperparameters.
+
+## Source-only EMA/BN diagnostics
+
+`scripts/diagnose_source_ema_bn.py` checks whether copied student BN statistics
+are affecting an active EMA model. It archives the completed-epoch input
+teacher weights and source spec, evaluates the full source validation set,
+resets/recomputes BN statistics in a scratch copy using source training images,
+and repeats the same source validation evaluation. Parameters must remain
+identical. Calibration uses the first 32 lexicographically sorted source
+training IDs, deterministic 320-pixel center crops, physical batches of four,
+native normalization, and cumulative BN statistics with dropout disabled.
+Training annotations are not read during calibration.
+
+```bash
+uv run --no-sync python scripts/diagnose_source_ema_bn.py \
+  --spec runs/benchmark_v1/specs/stb_10_mean_teacher_seed1_v1.json \
+  --threads 2
+```
+
+The diagnostic uses CPU only, validates the source partition and frozen spec,
+and accepts a matching, non-smoke active rolling EMA checkpoint. Its archived
+input weights, hashes, source spec, calibration IDs, and per-image validation
+predictions are stored separately under `runs/benchmark_v1/diagnostics/`.
+It never writes to a trainer's checkpoint, selects a primary model, accesses
+target data, or evaluates test images. Scratch recalibration is **not part of
+the version-1 recipe**, and diagnostic scores cannot enter primary benchmark
+statistics. A diagnostic difference can support BN sensitivity at that
+checkpoint; it cannot establish final unseen-domain performance or a general
+failure of SSL. Any subsequent protocol change must be separately versioned
+and justified using source-only evidence.
