@@ -24,6 +24,14 @@ unlabeled path starts after that warmup; zero unlabeled visits at this stage
 are expected. W&B logs source training and source validation only. These early
 validation measurements are not final benchmark results.
 
+The warmup transition was subsequently verified at **05:00:46 UTC**. Mean
+Teacher completed zero-based epoch 10 with 320 labeled visits, 320 unlabeled
+visits, and 20 optimizer updates. Its supervised and unsupervised losses were
+finite (1.20213 and 0.13853); no trainer exception or out-of-memory failure was
+observed. The label-only run had completed epoch 11 at the next process check.
+This verifies that the declared unlabeled path is active in production, not
+only in a smoke run. It does not establish final counting performance.
+
 The matrix contains 141 primary runs: four audited historical MPCount runs
 are complete, two new runs are active, and 135 runs are pending at this
 snapshot. The queue advances automatically, using up to two GPUs, and performs
