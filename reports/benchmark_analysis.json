@@ -1,7 +1,7 @@
 {
   "analysis_version": 1,
   "complete": false,
-  "completed_runs": 4,
+  "completed_runs": 7,
   "contrasts": [],
   "degradation": [
     {
@@ -654,7 +654,9 @@
     },
     {
       "complete": false,
-      "completed_seeds": [],
+      "completed_seeds": [
+        1
+      ],
       "domains": {},
       "expected_seeds": [
         1,
@@ -667,7 +669,9 @@
     },
     {
       "complete": false,
-      "completed_seeds": [],
+      "completed_seeds": [
+        1
+      ],
       "domains": {},
       "expected_seeds": [
         1,
@@ -734,7 +738,9 @@
     },
     {
       "complete": false,
-      "completed_seeds": [],
+      "completed_seeds": [
+        1
+      ],
       "domains": {},
       "expected_seeds": [
         1,
@@ -873,11 +879,11 @@
     }
   ],
   "production_commit": "63aa4d2de830aca2c81f1f7df157486a1e4a7115",
-  "remaining_runs": 137,
+  "remaining_runs": 134,
   "source_order": [
     "stb",
     "sta",
     "qnrf"
   ],
-  "updated_at": "2026-10-07T05:08:15+00:00"
+  "updated_at": "2026-10-07T16:39:48+00:00"
 }

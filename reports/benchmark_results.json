@@ -1,6 +1,28 @@
 {
   "aggregate": [
     {
+      "all_seeds_complete": false,
+      "completed_seeds": [
+        1
+      ],
+      "domains": {},
+      "expected_seeds": 3,
+      "fraction": 0.1,
+      "method": "label_only",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": false,
+      "completed_seeds": [
+        1
+      ],
+      "domains": {},
+      "expected_seeds": 3,
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "source": "stb"
+    },
+    {
       "all_seeds_complete": true,
       "completed_seeds": [
         1,
@@ -42,6 +64,17 @@
       "expected_seeds": 3,
       "fraction": 0.1,
       "method": "mpcount",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": false,
+      "completed_seeds": [
+        1
+      ],
+      "domains": {},
+      "expected_seeds": 3,
+      "fraction": 0.1,
+      "method": "ssl_dg",
       "source": "stb"
     },
     {
@@ -89,6 +122,84 @@
   ],
   "completed": [
     {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_label_only_seed1_v1/best.pt",
+      "checkpoint_sha256": "8e857b23608be52e6ce9672cc3b4b08d59442c547d20a1016ce8d4d7e57283f1",
+      "completed_at": "2026-10-07T08:40:06+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "8e857b23608be52e6ce9672cc3b4b08d59442c547d20a1016ce8d4d7e57283f1",
+          "mae": 189.60279699568508,
+          "mse": 102429.82230349378,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 320.0465939570265
+        },
+        "sta": {
+          "checkpoint_sha256": "8e857b23608be52e6ce9672cc3b4b08d59442c547d20a1016ce8d4d7e57283f1",
+          "mae": 124.69915861092039,
+          "mse": 38478.412688568154,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 196.15915142701897
+        },
+        "stb": {
+          "checkpoint_sha256": "8e857b23608be52e6ce9672cc3b4b08d59442c547d20a1016ce8d4d7e57283f1",
+          "mae": 12.300315951963011,
+          "mse": 440.08765806305865,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 20.97826632644029
+        }
+      },
+      "experiment": "stb_10_label_only_seed1_v1",
+      "fraction": 0.1,
+      "method": "label_only",
+      "model_kind": "student",
+      "seed": 1,
+      "selected_epoch": 10,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_mean_teacher_seed1_v1/best.pt",
+      "checkpoint_sha256": "fc6109a8b0df92458a51163ec3ab35d869a04efd29a7d61c618e129d48817cf9",
+      "completed_at": "2026-10-07T10:38:48+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "fc6109a8b0df92458a51163ec3ab35d869a04efd29a7d61c618e129d48817cf9",
+          "mae": 207.90648873386422,
+          "mse": 119597.722005766,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 345.82903580492774
+        },
+        "sta": {
+          "checkpoint_sha256": "fc6109a8b0df92458a51163ec3ab35d869a04efd29a7d61c618e129d48817cf9",
+          "mae": 105.44565561684412,
+          "mse": 27553.803023099914,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 165.99338246779573
+        },
+        "stb": {
+          "checkpoint_sha256": "fc6109a8b0df92458a51163ec3ab35d869a04efd29a7d61c618e129d48817cf9",
+          "mae": 12.800057836605019,
+          "mse": 486.86257455548974,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 22.064962600364627
+        }
+      },
+      "experiment": "stb_10_mean_teacher_seed1_v1",
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "model_kind": "ema",
+      "seed": 1,
+      "selected_epoch": 131,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
       "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_10_seed1_effbs16/best_166.pth",
       "checkpoint_sha256": "8932b730aeb62e9555042f1093956e5e991f386ef93c22e89da071d7e614ddb8",
       "domains": {
@@ -119,6 +230,45 @@
       "method": "mpcount",
       "seed": 1,
       "selected_epoch": 166,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_ssl_dg_seed1_v1/best.pt",
+      "checkpoint_sha256": "95bad1f126dfe5ca0c533d98fb303314f674e046c9f6406cc4c1ee62e3af57ae",
+      "completed_at": "2026-10-07T14:59:49+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "95bad1f126dfe5ca0c533d98fb303314f674e046c9f6406cc4c1ee62e3af57ae",
+          "mae": 212.476497367539,
+          "mse": 141291.10369202506,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 375.88708902012723
+        },
+        "sta": {
+          "checkpoint_sha256": "95bad1f126dfe5ca0c533d98fb303314f674e046c9f6406cc4c1ee62e3af57ae",
+          "mae": 100.55788181447457,
+          "mse": 30995.37495220368,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 176.05503387351263
+        },
+        "stb": {
+          "checkpoint_sha256": "95bad1f126dfe5ca0c533d98fb303314f674e046c9f6406cc4c1ee62e3af57ae",
+          "mae": 12.30409966500198,
+          "mse": 689.0482107024346,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 26.24972782149245
+        }
+      },
+      "experiment": "stb_10_ssl_dg_seed1_v1",
+      "fraction": 0.1,
+      "method": "ssl_dg",
+      "model_kind": "ema",
+      "seed": 1,
+      "selected_epoch": 154,
       "selection_domain": "stb_val",
       "source": "stb"
     },
@@ -225,33 +375,18 @@
       "source": "stb"
     }
   ],
-  "completed_count": 4,
+  "completed_count": 7,
   "primary_total": 141,
   "remaining": [
     {
       "error": null,
-      "name": "stb_10_label_only_seed1_v1",
-      "state": "training"
-    },
-    {
-      "error": null,
-      "name": "stb_10_mean_teacher_seed1_v1",
-      "state": "training"
-    },
-    {
-      "error": null,
-      "name": "stb_10_ssl_dg_seed1_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
       "name": "stb_10_domain_stable_seed1_v1",
-      "state": "pending"
+      "state": "training"
     },
     {
       "error": null,
       "name": "stb_10_label_only_seed2_v1",
-      "state": "pending"
+      "state": "training"
     },
     {
       "error": null,
@@ -914,6 +1049,6 @@
       "state": "pending"
     }
   ],
-  "remaining_count": 137,
-  "updated_at": "2026-10-07T05:08:15+00:00"
+  "remaining_count": 134,
+  "updated_at": "2026-10-07T16:39:48+00:00"
 }

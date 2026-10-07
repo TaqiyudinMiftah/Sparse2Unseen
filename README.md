@@ -268,3 +268,8 @@ validation checkpoint selection, explicit update/exposure budgets, and
 resumable training with W&B. Its [progress report](reports/benchmark_progress.md)
 tracks every required run. The original standalone VGG trainer/configs remain
 prototype scaffolds; primary results use the benchmark suite.
+The first seed-1 label-only, Mean Teacher, and ordinary SSL + MPCount runs have
+also completed their fixed three-domain tests. A separate
+[source-only EMA/BN diagnostic](reports/ema_bn_diagnostic.md) records early
+teacher instability and scratch normalization sensitivity; it does not alter
+production models or contribute scores to the benchmark table.

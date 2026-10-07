@@ -2,8 +2,8 @@
 
 The production queue launched on **2026-10-07 at 04:44:29 UTC**. The recipe,
 code, and splits were frozen at 04:44:19 UTC from commit
-`63aa4d2de830aca2c81f1f7df157486a1e4a7115`. Report-only commits after this
-freeze do not change the running experiments.
+`63aa4d2de830aca2c81f1f7df157486a1e4a7115`. Subsequent reporting and isolated
+diagnostic additions do not change the frozen production recipe.
 
 Both first training jobs began at 04:45:29 UTC:
 
@@ -19,7 +19,8 @@ utilization at the earlier 04:54 UTC sample. Other users' GPU jobs were left
 untouched. Rolling resume checkpoints and source-selected best checkpoints
 were present for both runs.
 
-Mean Teacher is still in its declared ten-epoch supervised warmup. Its
+At that snapshot, Mean Teacher was still in its declared ten-epoch supervised
+warmup. Its
 unlabeled path starts after that warmup; zero unlabeled visits at this stage
 are expected. W&B logs source training and source validation only. These early
 validation measurements are not final benchmark results.
@@ -69,11 +70,44 @@ with EMA checkpoints selected by source validation only. This instability
 must be considered when interpreting recipe-specific SSL results; it cannot
 support a general claim that source-only SSL fails.
 
+The subsequent [full source-only BN diagnostic](ema_bn_diagnostic.md) completed
+at 06:09:55 UTC. On an archived epoch-36 EMA checkpoint, scratch recalibration
+using 32 source training images reduced 80-image source-validation MAE from
+359.51998 to 15.55872 while preserving every model parameter. These diagnostic
+scores are excluded from the primary results. The unchanged production run
+later selected epoch 131, rather than its early unstable checkpoint.
+
+## Completed production audits, 16:40 UTC
+
+Three new runs completed 180 epochs and fixed STB/STA/QNRF test evaluation:
+
+| STB 10% run, seed 1 | Source-selected epoch (zero-based) | Source-val MAE | Test evaluation completed (UTC) |
+| --- | ---: | ---: | --- |
+| Label-only | 10 | 10.59355 | 08:40:08 |
+| Mean Teacher | 131 | 13.38286 | 10:38:50 |
+| Ordinary SSL + MPCount | 154 | 15.28983 | 14:59:53 |
+
+All seven completed entries, including the four historical MPCount references,
+passed the checkpoint, complete-epoch/exposure, source-selection, fixed test
+ID/count, and saved prediction/metric audits. Updated MAE/RMSE are in
+[benchmark_progress.md](benchmark_progress.md). No complete three-seed matched
+method contrast is available yet; seed-1 differences are descriptive, not
+final SSL/DG conclusions. The 127-test suite passes, and the strict conclusion
+gate still correctly refuses completion with 134 primary entries remaining.
+
+The queue automatically advanced to the STB 10% stability prototype, seed 1
+([W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/2n48d40j)), and label-only,
+seed 2 ([W&B](https://wandb.ai/Tim-1/Sparse2Unseen/runs/h0il2ddv)). Both child
+processes and the detached manager were confirmed live; both GPUs showed
+100% utilization. No training recipe, target-dependent selection, or external
+user process was changed.
+
 ## Queue and reporting
 
 The matrix contains 141 primary runs: four audited historical MPCount runs
-are complete, two new runs are active, and 135 runs are pending at this
-snapshot. The queue advances automatically, using up to two GPUs, and performs
+and three new runs are complete, two new runs are active, and 132 runs are
+pending at the 16:40 UTC snapshot. The queue advances automatically, using up
+to two GPUs, and performs
 the fixed three-domain test evaluation only after successful full training.
 The running manager is detached from the interactive shell; this does not
 provide automatic restart after a host reboot.

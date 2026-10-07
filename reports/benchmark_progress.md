@@ -1,8 +1,8 @@
 # Complete benchmark progress
 
-Updated 2026-10-07T05:08:15+00:00.
+Updated 2026-10-07T16:39:48+00:00.
 
-Audited training + all-test completion: **4 / 141**.
+Audited training + all-test completion: **7 / 141**.
 
 The final conclusion is pending the complete primary matrix. The protocol is in
 [BENCHMARK_SUITE.md](../docs/BENCHMARK_SUITE.md). JHU remains the later external extension.
@@ -13,7 +13,10 @@ Scores are MAE / RMSE. QNRF uses fixed 1024 tiles.
 
 | Source | Labels | Method | Seed | STB | STA | QNRF |
 | --- | ---: | --- | ---: | ---: | ---: | ---: |
+| stb | 10% | label_only | 1 | 12.3003 / 20.9783 | 124.6992 / 196.1592 | 189.6028 / 320.0466 |
+| stb | 10% | mean_teacher | 1 | 12.8001 / 22.0650 | 105.4457 / 165.9934 | 207.9065 / 345.8290 |
 | stb | 10% | mpcount | 1 | 8.9392 / 15.8303 | 102.2181 / 172.8133 | 250.3209 / 410.7431 |
+| stb | 10% | ssl_dg | 1 | 12.3041 / 26.2497 | 100.5579 / 176.0550 | 212.4765 / 375.8871 |
 | stb | 10% | mpcount | 2 | 9.9386 / 16.8172 | 116.4645 / 205.1531 | 270.0684 / 437.8901 |
 | stb | 10% | mpcount | 3 | 9.7771 / 15.9677 | 135.3673 / 221.5474 | 250.7229 / 417.5391 |
 | stb | 100% | mpcount | 2023 | 7.7991 / 13.3822 | 110.6855 / 181.4593 | 242.7133 / 418.9947 |
@@ -31,11 +34,8 @@ Only groups with all their required seeds appear here.
 
 | Experiment | Current state |
 | --- | --- |
-| stb_10_label_only_seed1_v1 | training |
-| stb_10_mean_teacher_seed1_v1 | training |
-| stb_10_ssl_dg_seed1_v1 | pending |
-| stb_10_domain_stable_seed1_v1 | pending |
-| stb_10_label_only_seed2_v1 | pending |
+| stb_10_domain_stable_seed1_v1 | training |
+| stb_10_label_only_seed2_v1 | training |
 | stb_10_mean_teacher_seed2_v1 | pending |
 | stb_10_ssl_dg_seed2_v1 | pending |
 | stb_10_domain_stable_seed2_v1 | pending |

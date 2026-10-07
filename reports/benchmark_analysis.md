@@ -1,8 +1,8 @@
 # Benchmark analysis
 
-Updated 2026-10-07T05:08:15+00:00.
+Updated 2026-10-07T16:39:48+00:00.
 
-Status: partial — final conclusion pending; 4/141 audited runs.
+Status: partial — final conclusion pending; 7/141 audited runs.
 
 All statistics use source-selected, completed training and fixed test evaluations.
 Only complete seed groups and matched contrasts are displayed. Cells give
