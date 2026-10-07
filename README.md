@@ -179,10 +179,14 @@ Refresh the local aggregate report with:
 
 ```bash
 uv run --no-sync python scripts/report_benchmark_suite.py
+uv run --no-sync python scripts/analyze_benchmark_suite.py
 ```
 
 The source/fraction/seed matrix stays fixed until training and test evaluation
 complete. No target score changes a training setting or checkpoint choice.
+The [analysis report](reports/benchmark_analysis.md) tracks complete three-seed
+MAE/RMSE, label-scarcity degradation, and matched baseline effects. It remains
+explicitly partial until the complete experiment matrix passes its audit.
 
 ## Standalone prototype scaffold
 

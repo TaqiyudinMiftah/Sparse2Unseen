@@ -34,6 +34,10 @@ the early low-update-budget epochs. A source-only preflight exposed that
 issue with the constant-decay scaffold before the production recipe was frozen.
 SSL validation and final inference use the EMA model; B0/B2 use the
 student. The model choice is fixed before target evaluation.
+EMA averages parameters; the existing helper copies student buffers, including
+batch-normalization statistics, after optimizer updates. The teacher stays in
+evaluation mode. The startup-decay formula follows Mean Teacher, but this does
+not claim an exact reproduction of its original network/buffer convention.
 
 Unlabeled datasets receive only source image paths and IDs; annotation paths
 and counts are stripped, and annotation files are never opened by the
@@ -110,6 +114,9 @@ uv run --no-sync python scripts/build_benchmark_suite.py
 uv run --no-sync python scripts/finalize_benchmark_suite.py
 uv run --no-sync python scripts/run_benchmark_suite.py --launch
 uv run --no-sync python scripts/report_benchmark_suite.py
+uv run --no-sync python scripts/analyze_benchmark_suite.py
+# This must fail until every primary training/test entry is complete:
+uv run --no-sync python scripts/analyze_benchmark_suite.py --require-complete
 ```
 
 Runtime specs, checkpoints, predictions, and queue state are under
@@ -118,3 +125,20 @@ validation only, using existing machine authentication. No credentials are
 stored in specs or reports. Code, splits, protocol, and aggregate reports are
 pushed via the experiment PR. The final conclusion requires every primary
 matrix entry and test domain to pass the completion audit.
+
+## Post-evaluation analysis
+
+[The analysis report](../reports/benchmark_analysis.md) shows both MAE and
+RMSE mean/sample SD only for complete seed groups. It includes absolute and
+relative changes against the declared supervised-family 100% reference,
+same-split/seed method contrasts, and target-minus-source relative degradation
+in percentage points. Seed-level RMSE values are averaged; test images are
+not pooled across separately trained seeds. No significance claim is made
+from three seeds or a single full-label reference.
+
+The report audit rechecks legacy upstream logs. For new completed runs it also
+requires all declared epochs and exposure/update budgets, minimum source-val
+checkpoint selection, the fixed student/EMA model choice, exact test IDs/counts,
+and MAE/MSE/RMSE recomputed from saved per-image predictions. Partial or inconsistent
+results cannot enter final statistics. This post-evaluation tooling is outside
+the frozen training path and does not alter model selection or hyperparameters.

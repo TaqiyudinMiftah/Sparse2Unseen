@@ -1,0 +1,883 @@
+{
+  "analysis_version": 1,
+  "complete": false,
+  "completed_runs": 4,
+  "contrasts": [],
+  "degradation": [
+    {
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "absolute_increase": {
+              "mean": 14.324099999999996,
+              "n_seeds": 3,
+              "sample_sd": 11.28696689770994
+            },
+            "full_reference": 242.7133,
+            "relative_increase_pct": {
+              "mean": 5.901654338678596,
+              "n_seeds": 3,
+              "sample_sd": 4.65032896743192
+            }
+          },
+          "rmse": {
+            "absolute_increase": {
+              "mean": 3.062701894289338,
+              "n_seeds": 3,
+              "sample_sd": 14.126299663112064
+            },
+            "full_reference": 418.994739107784,
+            "relative_increase_pct": {
+              "mean": 0.7309642838979595,
+              "n_seeds": 3,
+              "sample_sd": 3.3714742321569227
+            }
+          }
+        },
+        "sta": {
+          "mae": {
+            "absolute_increase": {
+              "mean": 7.331133333333331,
+              "n_seeds": 3,
+              "sample_sd": 16.629016915420262
+            },
+            "full_reference": 110.6855,
+            "relative_increase_pct": {
+              "mean": 6.623390898837997,
+              "n_seeds": 3,
+              "sample_sd": 15.023663366403245
+            }
+          },
+          "rmse": {
+            "absolute_increase": {
+              "mean": 18.37860374419637,
+              "n_seeds": 3,
+              "sample_sd": 24.798009061737304
+            },
+            "full_reference": 181.45932216339838,
+            "relative_increase_pct": {
+              "mean": 10.128222416507771,
+              "n_seeds": 3,
+              "sample_sd": 13.66587771082242
+            }
+          }
+        },
+        "stb": {
+          "mae": {
+            "absolute_increase": {
+              "mean": 1.752533333333333,
+              "n_seeds": 3,
+              "sample_sd": 0.5364946442727396
+            },
+            "full_reference": 7.7991,
+            "relative_increase_pct": {
+              "mean": 22.470968872476735,
+              "n_seeds": 3,
+              "sample_sd": 6.878930187749095
+            }
+          },
+          "rmse": {
+            "absolute_increase": {
+              "mean": 2.8228457939858633,
+              "n_seeds": 3,
+              "sample_sd": 0.5345770917651821
+            },
+            "full_reference": 13.382227019446352,
+            "relative_increase_pct": {
+              "mean": 21.093991230935266,
+              "n_seeds": 3,
+              "sample_sd": 3.994679592480107
+            }
+          }
+        }
+      },
+      "fraction": 0.1,
+      "method": "mpcount",
+      "reference_method": "mpcount",
+      "reference_seed": 2023,
+      "source": "stb"
+    }
+  ],
+  "disproportion": [
+    {
+      "fraction": 0.1,
+      "method": "mpcount",
+      "reference_method": "mpcount",
+      "source": "stb",
+      "target": "sta",
+      "target_minus_source_degradation_pp": {
+        "mae": {
+          "mean": -15.847577973638739,
+          "n_seeds": 3,
+          "sample_sd": 11.071923221833012
+        },
+        "rmse": {
+          "mean": -10.965768814427495,
+          "n_seeds": 3,
+          "sample_sd": 12.993454103600714
+        }
+      }
+    },
+    {
+      "fraction": 0.1,
+      "method": "mpcount",
+      "reference_method": "mpcount",
+      "source": "stb",
+      "target": "qnrf",
+      "target_minus_source_degradation_pp": {
+        "mae": {
+          "mean": -16.56931453379814,
+          "n_seeds": 3,
+          "sample_sd": 5.300703460216387
+        },
+        "rmse": {
+          "mean": -20.36302694703731,
+          "n_seeds": 3,
+          "sample_sd": 0.7506390624520618
+        }
+      }
+    }
+  ],
+  "expected_runs": 141,
+  "groups": [
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "domain_stable",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "label_only",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "mean_teacher",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "mpcount",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "ssl_dg",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "label_only",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "mpcount",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "ssl_dg",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "domain_stable",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "label_only",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "mean_teacher",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "mpcount",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "ssl_dg",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        2023
+      ],
+      "fraction": 1.0,
+      "method": "label_only",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        2023
+      ],
+      "fraction": 1.0,
+      "method": "mpcount",
+      "source": "qnrf"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "domain_stable",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "label_only",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "mean_teacher",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "mpcount",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "ssl_dg",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "label_only",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "mpcount",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "ssl_dg",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "domain_stable",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "label_only",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "mean_teacher",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "mpcount",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "ssl_dg",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        2023
+      ],
+      "fraction": 1.0,
+      "method": "label_only",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        2023
+      ],
+      "fraction": 1.0,
+      "method": "mpcount",
+      "source": "sta"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "domain_stable",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "label_only",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "mean_teacher",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "mpcount",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.05,
+      "method": "ssl_dg",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "label_only",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "source": "stb"
+    },
+    {
+      "complete": true,
+      "completed_seeds": [
+        1,
+        2,
+        3
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 257.0374,
+            "n_seeds": 3,
+            "sample_sd": 11.28696689770994
+          },
+          "rmse": {
+            "mean": 422.05744100207335,
+            "n_seeds": 3,
+            "sample_sd": 14.126299663112064
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 118.01663333333333,
+            "n_seeds": 3,
+            "sample_sd": 16.629016915420262
+          },
+          "rmse": {
+            "mean": 199.83792590759475,
+            "n_seeds": 3,
+            "sample_sd": 24.798009061737304
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 9.551633333333333,
+            "n_seeds": 3,
+            "sample_sd": 0.5364946442727396
+          },
+          "rmse": {
+            "mean": 16.205072813432217,
+            "n_seeds": 3,
+            "sample_sd": 0.5345770917651821
+          }
+        }
+      },
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "mpcount",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.1,
+      "method": "ssl_dg",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "domain_stable",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "label_only",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "mean_teacher",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "mpcount",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        1,
+        2,
+        3
+      ],
+      "fraction": 0.4,
+      "method": "ssl_dg",
+      "source": "stb"
+    },
+    {
+      "complete": false,
+      "completed_seeds": [],
+      "domains": {},
+      "expected_seeds": [
+        2023
+      ],
+      "fraction": 1.0,
+      "method": "label_only",
+      "source": "stb"
+    },
+    {
+      "complete": true,
+      "completed_seeds": [
+        2023
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 242.7133,
+            "n_seeds": 1,
+            "sample_sd": null
+          },
+          "rmse": {
+            "mean": 418.994739107784,
+            "n_seeds": 1,
+            "sample_sd": null
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 110.6855,
+            "n_seeds": 1,
+            "sample_sd": null
+          },
+          "rmse": {
+            "mean": 181.45932216339838,
+            "n_seeds": 1,
+            "sample_sd": null
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 7.7991,
+            "n_seeds": 1,
+            "sample_sd": null
+          },
+          "rmse": {
+            "mean": 13.382227019446352,
+            "n_seeds": 1,
+            "sample_sd": null
+          }
+        }
+      },
+      "expected_seeds": [
+        2023
+      ],
+      "fraction": 1.0,
+      "method": "mpcount",
+      "source": "stb"
+    }
+  ],
+  "production_commit": "63aa4d2de830aca2c81f1f7df157486a1e4a7115",
+  "remaining_runs": 137,
+  "source_order": [
+    "stb",
+    "sta",
+    "qnrf"
+  ],
+  "updated_at": "2026-10-07T05:08:15+00:00"
+}
