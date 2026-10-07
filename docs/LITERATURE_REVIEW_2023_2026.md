@@ -4,6 +4,11 @@
 
 **Last consolidated:** 20 September 2026.
 
+**Critical correction, 7 October 2026:** the earlier framing understated
+TMTB's cross-domain experiments. See the
+[current novelty audit](NOVELTY_AUDIT_2026_10.md). The setting itself must not
+be claimed as new.
+
 This document records the literature review used to define the Sparse2Unseen research problem. It is not intended to be an exhaustive survey of all crowd-counting papers.
 
 ## Main takeaway
@@ -15,11 +20,13 @@ Recent crowd-counting research has several mature lines:
 3. **Single-domain / cross-scene generalization** targets deployment to unseen environments.
 4. **Test-time adaptation, video, multimodal sensing, and robustness** address increasingly realistic deployment settings.
 
-The most relevant gap for Sparse2Unseen is at the intersection of the first two major deployment constraints:
+The Sparse2Unseen research focus is the intersection of two deployment constraints:
 
 > **Only a small subset of one source domain is labeled, the rest of that source is unlabeled, and the trained model must generalize to completely unseen target datasets without seeing target images during training.**
 
-Within the reviewed set, this exact protocol is not the central setting of the closest semi-supervised or domain-generalization methods.
+The intersection is scientifically useful but has prior experimental coverage.
+The research must establish an empirical or algorithmic contribution, not rely
+on an absence-of-prior-work claim.
 
 ## Literature matrix
 
@@ -44,7 +51,7 @@ Within the reviewed set, this exact protocol is not the central setting of the c
 | 2024 | [Domain-Agnostic Crowd Counting via Uncertainty-Guided Style Diversity Augmentation (UGSDA)](https://doi.org/10.1145/3664647.3681310) | ACM Multimedia | Single-domain generalization / uncertainty | Fully labeled source | Uses uncertainty-guided style perturbation and density-distribution consistency to diversify one source domain. | Critical novelty boundary: uncertainty + DG already exists; Sparse2Unseen must distinguish itself through sparse-source SSL + DG. | [GitHub](https://github.com/gcding/UGSDA-pytorch) |
 | 2024 | [Crowd Counting Using Meta-Test-Time Adaptation (CrowdTTA)](https://pubmed.ncbi.nlm.nih.gov/39252679/) | International Journal of Neural Systems | Test-time adaptation | Supervised source + unlabeled test sample | Meta-learns an initialization and adapts at test time using pseudo supervision / uncertainty. | Target test samples are used during adaptation, unlike Sparse2Unseen's no-target-access training protocol. | -- |
 | 2024 | [MRC-Crowd: Semi-Supervised Crowd Counting via Multi-Representation Consistency](https://arxiv.org/abs/2310.10352) | Preprint | Semi-supervised | Labeled + unlabeled source | Uses multiple crowd representations and consistency constraints. | Useful SSL baseline, but primarily in-domain rather than source-only DG. | [GitHub](https://github.com/cha15yq/MRC-Crowd) |
-| 2025 | [Taste More, Taste Better: Diverse Data and Strong Model Boost Semi-Supervised Crowd Counting (TMTB)](https://openaccess.thecvf.com/content/CVPR2025/html/Yang_Taste_More_Taste_Better_Diverse_Data_and_Strong_Model_Boost_CVPR_2025_paper.html) | CVPR | Semi-supervised | Point labels + unlabeled source | Combines crowd-aware inpainting augmentation, a visual state-space model, and anti-noise classification. | Strong recent label-efficient baseline, but source-only unseen-domain generalization is not the formal target. | [GitHub](https://github.com/syhien/taste_more_taste_better) |
+| 2025 | [TMTB](https://arxiv.org/html/2503.17984v1) | CVPR | Semi-supervised / source-only transfer | Point labels + unlabeled source | Inpainting, VSSM, and regional inconsistency weighting; reports 40% source-only A/Q transfer. | Direct protocol and method overlap; essential related work, not an in-domain-only comparator. | [GitHub](https://github.com/syhien/taste_more_taste_better) |
 | 2025 | [Point-to-Region Loss for Semi-Supervised Point-Based Crowd Counting (P2R)](https://openaccess.thecvf.com/content/CVPR2025/html/Lin_Point-to-Region_Loss_for_Semi-Supervised_Point-Based_Crowd_Counting_CVPR_2025_paper.html) | CVPR | Semi-supervised / point-based / UDA | Partial point labels + unlabeled data | Relaxes point-to-point matching to point-to-region supervision and studies semi-supervised counting and UDA. | Very close methodologically, but its UDA setting can use target-domain unlabeled data; Sparse2Unseen forbids target access. | [GitHub](https://github.com/Elin24/P2RLoss) |
 | 2025 | [Free Lunch Enhancements for Multi-modal Crowd Counting](https://openaccess.thecvf.com/content/CVPR2025/html/Meng_Free_Lunch_Enhancements_for_Multi-modal_Crowd_Counting_CVPR_2025_paper.html) | CVPR | Multimodal RGB-T | Fully supervised paired modalities | Adds cross-modal alignment and regional density supervision without extra inference parameters. | Fully supervised paired sensors; source label scarcity is not addressed. | [GitHub](https://github.com/HenryCilence/Free-Lunch-Multimodal-Counting) |
 | 2025 | [Perspective-assisted Prototype-based Learning for Semi-supervised Crowd Counting](https://www.sciencedirect.com/science/article/pii/S0031320324008240) | Pattern Recognition | Semi-supervised / perspective | Labeled + unlabeled images | Uses perspective information, prototypes, and consistency learning. | Primarily an in-domain SSL method rather than source-only DG. | -- |
@@ -74,11 +81,14 @@ This is why the first reproducibility milestone is the MPCount STB -> STA/QNRF s
 
 These methods establish that unlabeled crowd images can substantially reduce annotation requirements.
 
-What Sparse2Unseen changes:
+What Sparse2Unseen investigates:
 
-- performance is not judged only on the source distribution;
-- the target domains are completely unseen;
-- target data is not available for training or adaptation.
+- matched SSL/DG components and explicit annotation/update budgets;
+- multi-seed source-versus-unseen behavior across label fractions;
+- the incremental effect of regional stability weighting over B3.
+
+TMTB is a direct precedent, not evidence that this protocol was absent. P2R's
+target-unlabeled UDA experiments remain a different setting.
 
 P2R is particularly important because it also reports UDA. That setting must not be confused with Sparse2Unseen: UDA may use unlabeled target images, while Sparse2Unseen does not.
 
@@ -113,16 +123,17 @@ PET and APGCC are strong modern point-localization baselines. If Sparse2Unseen l
 
 **Primary Sparse2Unseen direction.**
 
-Reviewed literature has mature SSL and mature source-only DG, but the central protocol
+Reviewed literature has mature SSL and source-only DG. The protocol
 
 ```text
-5-10% labeled source
+5/10/40% labeled source
 + remaining unlabeled source
 -> completely unseen targets
 with zero target data
 ```
 
-is not the focus of the closest reviewed methods.
+has existing coverage; the remaining question is what a controlled benchmark
+and a specifically tested mechanism add. This is not a task-novelty claim.
 
 Working method hypothesis:
 

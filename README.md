@@ -31,6 +31,9 @@ without using target data during training
 
 For the full research framing and novelty boundaries, see [docs/RESEARCH_TLDR.md](docs/RESEARCH_TLDR.md).  
 For the 30-paper review that motivated the project, see [docs/LITERATURE_REVIEW_2023_2026.md](docs/LITERATURE_REVIEW_2023_2026.md).
+The [October novelty audit](docs/NOVELTY_AUDIT_2026_10.md) corrects the earlier
+gap claim: TMTB already studies sparse-source unseen-domain transfer. The
+setting itself is not claimed as new.
 
 ## Research protocol
 
@@ -54,7 +57,8 @@ targets: ShanghaiTech Part A, UCF-QNRF
 1. `label_only`: train only on the sparse labeled source subset.
 2. `mean_teacher`: add unlabeled source images with an EMA teacher.
 3. `sparse_mpcount`: run official MPCount using only the sparse labeled source subset.
-4. `ssl_dg`: prototype domain-stable pseudo-labeling using unlabeled source images.
+4. `ssl_dg`: ordinary source Mean Teacher consistency added to MPCount (B3).
+5. `domain_stable`: B3 with regional domain-stability weighting (prototype).
 
 ## Repository layout
 
@@ -160,9 +164,30 @@ uv run python tools/generate_splits.py \
   --output splits/stb_10_seed1.json
 ```
 
-For the paper, generate seeds 1, 2, and 3 at 5%, 10%, 40%, and 100%.
+The primary suite uses sparse seeds 1, 2, and 3 at 5%, 10%, and 40%, with
+seed 2023 for the full-label references. These splits are already generated.
 
-## 5. Sanity-check the first experiment
+## 5. Run the primary benchmark
+
+The production pipeline and frozen scientific settings are documented in
+[BENCHMARK_SUITE.md](docs/BENCHMARK_SUITE.md). Its detached queue is already
+running on this compute machine. Do not launch a second worker or rebuild its
+matrix while those jobs are live. Follow the existing runs through the
+[launch record and W&B links](reports/benchmark_execution.md).
+
+Refresh the local aggregate report with:
+
+```bash
+uv run --no-sync python scripts/report_benchmark_suite.py
+```
+
+The source/fraction/seed matrix stays fixed until training and test evaluation
+complete. No target score changes a training setting or checkpoint choice.
+
+## Standalone prototype scaffold
+
+The commands below use the original compact trainer, not the primary
+MPCount-backed benchmark comparators. They are retained for scaffold debugging.
 
 ```bash
 uv run python train.py --config configs/experiments/stb_10_label_only.yaml --dry-run
