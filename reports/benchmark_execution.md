@@ -32,6 +32,45 @@ observed. The label-only run had completed epoch 11 at the next process check.
 This verifies that the declared unlabeled path is active in production, not
 only in a smoke run. It does not establish final counting performance.
 
+## Source-only instability check, 05:35 UTC
+
+The label-only run had completed 39/180 epochs (zero-based epoch 38), with
+best source-validation MAE 10.59355 at epoch 10. Mean Teacher had completed
+28/180 epochs (epoch 27), with best source-validation MAE 18.72449 at epoch
+11. Both trainers and the detached queue manager remained live. No new run
+had completed training or reached test evaluation.
+
+Mean Teacher's validation performance became unstable after SSL began:
+MAE reached 407.55699 at epoch 23 and was 213.46828 at epoch 27. Its losses
+remained finite. A read-only CPU check loaded the epoch-26 rolling checkpoint
+and compared student and EMA inference on the first three **STB validation**
+images in the manifest, using identical whole-image inputs, native
+normalization, and density sum divided by 1000:
+
+| Source validation image | Ground-truth count | Student count | EMA teacher count |
+| --- | ---: | ---: | ---: |
+| IMG_106 | 132 | 151.79850 | 374.09891 |
+| IMG_108 | 209 | 142.48777 | 361.54066 |
+| IMG_11 | 139 | 165.53491 | 341.88459 |
+
+These are diagnostic examples, **not full-set MAE/RMSE or final results**.
+They show a large student/teacher inference gap at that checkpoint, but do
+not establish its cause or predict the final selected checkpoint's quality.
+The rolling checkpoint is subsequently overwritten by normal training; this
+table is an observation record, not a retained-checkpoint reproduction audit.
+
+Inspection found matching labeled/unlabeled input normalization and confirmed
+that all teacher buffers equaled the student buffers, as the declared helper
+requires. Parameter averaging combined with copied current batch-normalization
+statistics is a possible mechanism to investigate, not a demonstrated coding
+bug. No recalibration, target access, model replacement, checkpoint change,
+or recipe adjustment was performed. Production remains on the frozen recipe,
+with EMA checkpoints selected by source validation only. This instability
+must be considered when interpreting recipe-specific SSL results; it cannot
+support a general claim that source-only SSL fails.
+
+## Queue and reporting
+
 The matrix contains 141 primary runs: four audited historical MPCount runs
 are complete, two new runs are active, and 135 runs are pending at this
 snapshot. The queue advances automatically, using up to two GPUs, and performs
