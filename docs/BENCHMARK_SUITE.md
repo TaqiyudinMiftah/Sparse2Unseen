@@ -5,9 +5,11 @@ QNRF; each source is evaluated unchanged on its own test partition and the
 other two datasets. Sparse training fractions are 5%, 10%, and 40%, with split
 and model seeds 1, 2, and 3. Methods are B0 label-only, B1 Mean Teacher, B2
 MPCount, B3 ordinary SSL + MPCount, and the domain-stability prototype. Full
-label references use seed 2023 for B0 and B2. With no unlabeled images, B1
-reduces to B0 and B3/the prototype reduce to B2; these references are reused
-rather than training duplicate 100% runs. This gives **141 training runs**.
+label references use seed 2023 for B0 and B2. With no unlabeled images, the SSL
+loss disappears; these supervised-family references are used instead of
+separate 100% SSL runs. EMA averaging/checkpoint inference would still differ
+from student inference, so these are not measured 100% EMA results or exact
+algorithmic equivalences. This gives **141 training runs**.
 The existing STB full-label B2 and three STB 10% B2 runs are audited and reused.
 JHU-CROWD++ remains the subsequent external extension specified in the protocol.
 
@@ -79,6 +81,10 @@ be disclosed. Only source validation MAE selects checkpoints. QNRF source
 validation uses 1024 tiles; STB/STA validation uses whole images. Target files,
 target labels, target-derived statistics, and target adaptation are excluded
 from training and model selection. All settings are frozen before new tests.
+The exact per-run annotation costs, including validation, are recorded in
+[ANNOTATION_BUDGETS.md](ANNOTATION_BUDGETS.md). For example, STB 10% uses
+32 labeled training images plus 80 validation images: 112/400 canonical source
+training images, or 28%, not a literal 10% total annotation budget.
 
 ## Completion, evaluation, and storage
 

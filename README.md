@@ -187,6 +187,9 @@ complete. No target score changes a training setting or checkpoint choice.
 The [analysis report](reports/benchmark_analysis.md) tracks complete three-seed
 MAE/RMSE, label-scarcity degradation, and matched baseline effects. It remains
 explicitly partial until the complete experiment matrix passes its audit.
+The [annotation-budget table](docs/ANNOTATION_BUDGETS.md) includes the fixed
+labeled validation set; “10%” is the training-pool fraction, not total source
+annotation consumption.
 
 ## Standalone prototype scaffold
 
