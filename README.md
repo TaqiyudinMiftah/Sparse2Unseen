@@ -224,5 +224,10 @@ anchor](reports/mpcount_stb_100_seed2023_effbs16.md) completed 180 epochs and
 was selected on STB validation only. Fixed 10% STB training splits for seeds
 1, 2, and 3 are in `splits/`; each contains 32 labeled images out of 320. The
 80-image labeled STB validation set is outside that sparse-training fraction.
+The [three-seed sparse MPCount B2 experiment](reports/mpcount_stb_10_seed123.md)
+is complete with a fixed 20-update-per-epoch budget and source-only checkpoint
+selection. Its 10% sparse mean MAE (sample SD) is 9.55 (0.54) on STB,
+118.02 (16.63) on STA, and 257.04 (11.29) on fixed-tile QNRF. The original
+seed-3 run was interrupted; the report audits its clean, unchanged retry.
 The B0/B1 trainer and domain-stability method remain research scaffolds, not
 publication-ready results.

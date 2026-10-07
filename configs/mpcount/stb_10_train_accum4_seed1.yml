@@ -1,0 +1,61 @@
+# MPCount 10% STB: 32 labeled images, each sampled 10x per epoch.
+# Physical batch 4 x accumulation 4; 20 optimizer updates per epoch.
+seed: 1
+version: stb_10_seed1_effbs16
+device: 'cuda:0'
+log_para: 1000
+patch_size: 10000
+mode: 'final'
+num_epochs: 180
+accumulation_steps: 4
+expected_train_images: 32
+expected_val_images: 80
+train_samples_per_epoch: 320
+expected_updates_per_epoch: 20
+checkpoint: null
+model:
+  name: 'final'
+  params:
+    pretrained: True
+    deterministic: True
+    mem_size: 1024
+    mem_dim: 256
+    cls_thrs: 0.5
+    err_thrs: 0.5
+    den_dropout: 0.5
+    cls_dropout: 0.3
+    has_err_loss: False
+train_dataset: &stb_dataset
+  name: 'den_cls'
+  params:
+    root: 'data/stb_sparse10_seed1'
+    crop_size: 320
+    downsample: 1
+    is_grey: False
+    unit_size: 16
+    pre_resize: 1
+val_dataset: *stb_dataset
+test_dataset: *stb_dataset
+train_loader:
+  batch_size: 4
+  num_workers: 16
+  shuffle: True
+  pin_memory: True
+val_loader: &eval_loader
+  batch_size: 1
+  num_workers: 4
+  shuffle: False
+  pin_memory: False
+test_loader: *eval_loader
+optimizer:
+  name: 'adamw'
+  params:
+    lr: &lr 0.001
+    weight_decay: 0.0001
+scheduler:
+  name: 'onecycle'
+  params:
+    max_lr: *lr
+    epochs: 300
+    steps_per_epoch: 20
+    final_div_factor: 1000
