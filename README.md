@@ -229,5 +229,10 @@ is complete with a fixed 20-update-per-epoch budget and source-only checkpoint
 selection. Its 10% sparse mean MAE (sample SD) is 9.55 (0.54) on STB,
 118.02 (16.63) on STA, and 257.04 (11.29) on fixed-tile QNRF. The original
 seed-3 run was interrupted; the report audits its clean, unchanged retry.
-The B0/B1 trainer and domain-stability method remain research scaffolds, not
-publication-ready results.
+The [complete benchmark suite](docs/BENCHMARK_SUITE.md) adds the remaining
+label-only, Mean Teacher, ordinary SSL + MPCount, and domain-stability
+comparisons across the documented source/fraction/seed matrix. It uses source
+validation checkpoint selection, explicit update/exposure budgets, and
+resumable training with W&B. Its [progress report](reports/benchmark_progress.md)
+tracks every required run. The original standalone VGG trainer/configs remain
+prototype scaffolds; primary results use the benchmark suite.

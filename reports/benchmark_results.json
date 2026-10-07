@@ -1,0 +1,919 @@
+{
+  "aggregate": [
+    {
+      "all_seeds_complete": true,
+      "completed_seeds": [
+        1,
+        2,
+        3
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 257.0374,
+            "sample_sd": 11.28696689770994
+          },
+          "rmse": {
+            "mean": 422.05744100207335,
+            "sample_sd": 14.126299663112064
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 118.01663333333333,
+            "sample_sd": 16.629016915420262
+          },
+          "rmse": {
+            "mean": 199.83792590759475,
+            "sample_sd": 24.798009061737304
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 9.551633333333333,
+            "sample_sd": 0.5364946442727396
+          },
+          "rmse": {
+            "mean": 16.205072813432217,
+            "sample_sd": 0.5345770917651821
+          }
+        }
+      },
+      "expected_seeds": 3,
+      "fraction": 0.1,
+      "method": "mpcount",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": true,
+      "completed_seeds": [
+        2023
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 242.7133,
+            "sample_sd": null
+          },
+          "rmse": {
+            "mean": 418.994739107784,
+            "sample_sd": null
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 110.6855,
+            "sample_sd": null
+          },
+          "rmse": {
+            "mean": 181.45932216339838,
+            "sample_sd": null
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 7.7991,
+            "sample_sd": null
+          },
+          "rmse": {
+            "mean": 13.382227019446352,
+            "sample_sd": null
+          }
+        }
+      },
+      "expected_seeds": 1,
+      "fraction": 1.0,
+      "method": "mpcount",
+      "source": "stb"
+    }
+  ],
+  "completed": [
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_10_seed1_effbs16/best_166.pth",
+      "checkpoint_sha256": "8932b730aeb62e9555042f1093956e5e991f386ef93c22e89da071d7e614ddb8",
+      "domains": {
+        "qnrf": {
+          "mae": 250.3209,
+          "mse": 168709.8849,
+          "n": 334,
+          "rmse": 410.7430886819643
+        },
+        "sta": {
+          "mae": 102.2181,
+          "mse": 29864.4378,
+          "n": 182,
+          "rmse": 172.81330330735537
+        },
+        "stb": {
+          "mae": 8.9392,
+          "mse": 250.5985,
+          "n": 316,
+          "rmse": 15.830303218826858
+        }
+      },
+      "experiment": "stb_10_mpcount_seed1_v1",
+      "fraction": 0.1,
+      "imported_at": "2026-10-07T04:34:28+00:00",
+      "legacy_train_workers": 16,
+      "legacy_version": "stb_10_seed1_effbs16",
+      "method": "mpcount",
+      "seed": 1,
+      "selected_epoch": 166,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_10_seed2_effbs16/best_119.pth",
+      "checkpoint_sha256": "80ed8abaff54f51d02134ca32470b20dbe61cf70b14298bc4c087d1b608142a3",
+      "domains": {
+        "qnrf": {
+          "mae": 270.0684,
+          "mse": 191747.7812,
+          "n": 334,
+          "rmse": 437.8901474114256
+        },
+        "sta": {
+          "mae": 116.4645,
+          "mse": 42087.7813,
+          "n": 182,
+          "rmse": 205.15306797608463
+        },
+        "stb": {
+          "mae": 9.9386,
+          "mse": 282.8193,
+          "n": 316,
+          "rmse": 16.81723223363464
+        }
+      },
+      "experiment": "stb_10_mpcount_seed2_v1",
+      "fraction": 0.1,
+      "imported_at": "2026-10-07T04:34:29+00:00",
+      "legacy_train_workers": 16,
+      "legacy_version": "stb_10_seed2_effbs16",
+      "method": "mpcount",
+      "seed": 2,
+      "selected_epoch": 119,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_10_seed3_effbs16_retry1/best_135.pth",
+      "checkpoint_sha256": "f150cf69b0efd6492cde1990f11c56eb975c1a0fa8396d6f489bb2f2b873846d",
+      "domains": {
+        "qnrf": {
+          "mae": 250.7229,
+          "mse": 174338.8891,
+          "n": 334,
+          "rmse": 417.5390869128302
+        },
+        "sta": {
+          "mae": 135.3673,
+          "mse": 49083.2533,
+          "n": 182,
+          "rmse": 221.54740643934426
+        },
+        "stb": {
+          "mae": 9.7771,
+          "mse": 254.9669,
+          "n": 316,
+          "rmse": 15.967682987835149
+        }
+      },
+      "experiment": "stb_10_mpcount_seed3_v1",
+      "fraction": 0.1,
+      "imported_at": "2026-10-07T04:34:29+00:00",
+      "legacy_train_workers": 16,
+      "legacy_version": "stb_10_seed3_effbs16_retry1",
+      "method": "mpcount",
+      "seed": 3,
+      "selected_epoch": 135,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_100_seed2023_effbs16/best_179.pth",
+      "checkpoint_sha256": "ce5dc85a7c38195aa91b211e405fc5ef84480ef847f2194b16eb31dec856e9a2",
+      "domains": {
+        "qnrf": {
+          "mae": 242.7133,
+          "mse": 175556.5914,
+          "n": 334,
+          "rmse": 418.994739107784
+        },
+        "sta": {
+          "mae": 110.6855,
+          "mse": 32927.4856,
+          "n": 182,
+          "rmse": 181.45932216339838
+        },
+        "stb": {
+          "mae": 7.7991,
+          "mse": 179.084,
+          "n": 316,
+          "rmse": 13.382227019446352
+        }
+      },
+      "experiment": "stb_100_mpcount_seed2023_v1",
+      "fraction": 1.0,
+      "imported_at": "2026-10-07T04:34:46+00:00",
+      "legacy_train_workers": 16,
+      "legacy_version": "stb_100_seed2023_effbs16",
+      "method": "mpcount",
+      "seed": 2023,
+      "selected_epoch": 179,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    }
+  ],
+  "completed_count": 4,
+  "primary_total": 141,
+  "remaining": [
+    {
+      "error": null,
+      "name": "stb_10_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_10_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_5_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_40_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_10_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_5_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_40_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_10_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_5_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_label_only_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_label_only_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_label_only_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_mean_teacher_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_mean_teacher_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_mean_teacher_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_mpcount_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_mpcount_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_mpcount_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_ssl_dg_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_ssl_dg_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_ssl_dg_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_domain_stable_seed1_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_domain_stable_seed2_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_40_domain_stable_seed3_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "stb_100_label_only_seed2023_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_100_label_only_seed2023_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "sta_100_mpcount_seed2023_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_100_label_only_seed2023_v1",
+      "state": "pending"
+    },
+    {
+      "error": null,
+      "name": "qnrf_100_mpcount_seed2023_v1",
+      "state": "pending"
+    }
+  ],
+  "remaining_count": 137,
+  "updated_at": "2026-10-07T04:40:48+00:00"
+}
