@@ -268,8 +268,12 @@ validation checkpoint selection, explicit update/exposure budgets, and
 resumable training with W&B. Its [progress report](reports/benchmark_progress.md)
 tracks every required run. The original standalone VGG trainer/configs remain
 prototype scaffolds; primary results use the benchmark suite.
-The first seed-1 label-only, Mean Teacher, and ordinary SSL + MPCount runs have
-also completed their fixed three-domain tests. A separate
+The [full STB 10% five-method comparison across three seeds](reports/stb_10_benchmark_seed123.md)
+is complete. The stability prototype has the lowest mean unseen MAE/RMSE in
+this cohort, while sparse MPCount has the lowest source MAE/RMSE. Effects vary
+by seed, and the full-suite conclusion remains pending. At the 2026-10-09
+audit, 20/141 primary runs were complete and the queue had advanced to STB 5%.
+A separate
 [source-only EMA/BN diagnostic](reports/ema_bn_diagnostic.md) records early
 teacher instability and scratch normalization sensitivity; it does not alter
 production models or contribute scores to the benchmark table.

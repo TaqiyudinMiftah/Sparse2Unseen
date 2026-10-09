@@ -7,7 +7,7 @@
       ],
       "domains": {},
       "expected_seeds": 3,
-      "fraction": 0.1,
+      "fraction": 0.05,
       "method": "label_only",
       "source": "stb"
     },
@@ -17,6 +17,160 @@
         1
       ],
       "domains": {},
+      "expected_seeds": 3,
+      "fraction": 0.05,
+      "method": "mean_teacher",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": false,
+      "completed_seeds": [
+        1
+      ],
+      "domains": {},
+      "expected_seeds": 3,
+      "fraction": 0.05,
+      "method": "mpcount",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": false,
+      "completed_seeds": [
+        1
+      ],
+      "domains": {},
+      "expected_seeds": 3,
+      "fraction": 0.05,
+      "method": "ssl_dg",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": true,
+      "completed_seeds": [
+        1,
+        2,
+        3
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 197.48129833551897,
+            "sample_sd": 15.25698982900371
+          },
+          "rmse": {
+            "mean": 343.0076369851495,
+            "sample_sd": 15.36956990715207
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 105.15139354395599,
+            "sample_sd": 11.145003319627984
+          },
+          "rmse": {
+            "mean": 180.0756597152009,
+            "sample_sd": 13.962353835776712
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 10.894718308074566,
+            "sample_sd": 1.2032851524174648
+          },
+          "rmse": {
+            "mean": 21.165970548984525,
+            "sample_sd": 4.1057674120234
+          }
+        }
+      },
+      "expected_seeds": 3,
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": true,
+      "completed_seeds": [
+        1,
+        2,
+        3
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 225.4979750771234,
+            "sample_sd": 36.58801621912565
+          },
+          "rmse": {
+            "mean": 388.8891228596876,
+            "sample_sd": 61.6990126587275
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 120.61579765839633,
+            "sample_sd": 9.511736219141534
+          },
+          "rmse": {
+            "mean": 198.45409588525507,
+            "sample_sd": 17.023605589477693
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 11.305242359531578,
+            "sample_sd": 1.020600267846198
+          },
+          "rmse": {
+            "mean": 19.170516947942065,
+            "sample_sd": 1.864447482615913
+          }
+        }
+      },
+      "expected_seeds": 3,
+      "fraction": 0.1,
+      "method": "label_only",
+      "source": "stb"
+    },
+    {
+      "all_seeds_complete": true,
+      "completed_seeds": [
+        1,
+        2,
+        3
+      ],
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 214.99657225940584,
+            "sample_sd": 32.933854730360814
+          },
+          "rmse": {
+            "mean": 361.8874847685309,
+            "sample_sd": 38.98022847881044
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 111.97331275755492,
+            "sample_sd": 19.47524746891736
+          },
+          "rmse": {
+            "mean": 186.58931710282187,
+            "sample_sd": 34.98793520461064
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 13.895589942642397,
+            "sample_sd": 1.9684754480626232
+          },
+          "rmse": {
+            "mean": 24.89133951208508,
+            "sample_sd": 4.102212535232683
+          }
+        }
+      },
       "expected_seeds": 3,
       "fraction": 0.1,
       "method": "mean_teacher",
@@ -67,11 +221,44 @@
       "source": "stb"
     },
     {
-      "all_seeds_complete": false,
+      "all_seeds_complete": true,
       "completed_seeds": [
-        1
+        1,
+        2,
+        3
       ],
-      "domains": {},
+      "domains": {
+        "qnrf": {
+          "mae": {
+            "mean": 229.7436500412033,
+            "sample_sd": 35.32151565563872
+          },
+          "rmse": {
+            "mean": 401.87181536423157,
+            "sample_sd": 51.99541527816714
+          }
+        },
+        "sta": {
+          "mae": {
+            "mean": 116.0781971905048,
+            "sample_sd": 20.58644049678865
+          },
+          "rmse": {
+            "mean": 203.01205764658448,
+            "sample_sd": 40.425946660816464
+          }
+        },
+        "stb": {
+          "mae": {
+            "mean": 13.455223411334718,
+            "sample_sd": 1.0461249042970133
+          },
+          "rmse": {
+            "mean": 25.4373914098964,
+            "sample_sd": 2.7235173228974525
+          }
+        }
+      },
       "expected_seeds": 3,
       "fraction": 0.1,
       "method": "ssl_dg",
@@ -273,6 +460,123 @@
       "source": "stb"
     },
     {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_domain_stable_seed1_v1/best.pt",
+      "checkpoint_sha256": "2e746d5b3802a0042ffee8cffb71edc85b6e953cdb8d49e546a2d7a5bcd5c35d",
+      "completed_at": "2026-10-07T19:10:26+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "2e746d5b3802a0042ffee8cffb71edc85b6e953cdb8d49e546a2d7a5bcd5c35d",
+          "mae": 180.30245264519343,
+          "mse": 105837.06539914904,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 325.326090867531
+        },
+        "sta": {
+          "checkpoint_sha256": "2e746d5b3802a0042ffee8cffb71edc85b6e953cdb8d49e546a2d7a5bcd5c35d",
+          "mae": 93.69474287431312,
+          "mse": 27265.911726803213,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 165.1239283895681
+        },
+        "stb": {
+          "checkpoint_sha256": "2e746d5b3802a0042ffee8cffb71edc85b6e953cdb8d49e546a2d7a5bcd5c35d",
+          "mae": 12.058924730518193,
+          "mse": 598.230967050093,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 24.458760537895067
+        }
+      },
+      "experiment": "stb_10_domain_stable_seed1_v1",
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "model_kind": "ema",
+      "seed": 1,
+      "selected_epoch": 167,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_label_only_seed2_v1/best.pt",
+      "checkpoint_sha256": "0394e2708bcc8d7a261928154023886f41ef95921cd8a38f241141af29c7f5d5",
+      "completed_at": "2026-10-07T18:54:49+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "0394e2708bcc8d7a261928154023886f41ef95921cd8a38f241141af29c7f5d5",
+          "mae": 262.7415500664116,
+          "mse": 192891.60941376438,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 439.1942729746876
+        },
+        "sta": {
+          "checkpoint_sha256": "0394e2708bcc8d7a261928154023886f41ef95921cd8a38f241141af29c7f5d5",
+          "mae": 127.40405197244165,
+          "mse": 46876.04228926399,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 216.5087579966778
+        },
+        "stb": {
+          "checkpoint_sha256": "0394e2708bcc8d7a261928154023886f41ef95921cd8a38f241141af29c7f5d5",
+          "mae": 10.260900007416936,
+          "mse": 297.7047467878922,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 17.25412260266781
+        }
+      },
+      "experiment": "stb_10_label_only_seed2_v1",
+      "fraction": 0.1,
+      "method": "label_only",
+      "model_kind": "student",
+      "seed": 2,
+      "selected_epoch": 156,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_mean_teacher_seed2_v1/best.pt",
+      "checkpoint_sha256": "02e9c5b19eb6898d1a1ca156a05887430450f44fb39dc4d83843c3cc91d7f679",
+      "completed_at": "2026-10-08T00:28:55+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "02e9c5b19eb6898d1a1ca156a05887430450f44fb39dc4d83843c3cc91d7f679",
+          "mae": 250.89801716129492,
+          "mse": 165105.4651943688,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 406.3317181741647
+        },
+        "sta": {
+          "checkpoint_sha256": "02e9c5b19eb6898d1a1ca156a05887430450f44fb39dc4d83843c3cc91d7f679",
+          "mae": 133.8738667153159,
+          "mse": 51523.23646803445,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 226.98730464066585
+        },
+        "stb": {
+          "checkpoint_sha256": "02e9c5b19eb6898d1a1ca156a05887430450f44fb39dc4d83843c3cc91d7f679",
+          "mae": 16.168103120055363,
+          "mse": 875.9506813909571,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 29.59646400148094
+        }
+      },
+      "experiment": "stb_10_mean_teacher_seed2_v1",
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "model_kind": "ema",
+      "seed": 2,
+      "selected_epoch": 138,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
       "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_10_seed2_effbs16/best_119.pth",
       "checkpoint_sha256": "80ed8abaff54f51d02134ca32470b20dbe61cf70b14298bc4c087d1b608142a3",
       "domains": {
@@ -307,6 +611,162 @@
       "source": "stb"
     },
     {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_ssl_dg_seed2_v1/best.pt",
+      "checkpoint_sha256": "cdfb09584a0c98bd4255668ae36c5b0c8835aa6046b12891e5ca2a5e00dcaf94",
+      "completed_at": "2026-10-08T04:35:03+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "cdfb09584a0c98bd4255668ae36c5b0c8835aa6046b12891e5ca2a5e00dcaf94",
+          "mae": 270.3771255516236,
+          "mse": 213201.62177286882,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 461.73761139078636
+        },
+        "sta": {
+          "checkpoint_sha256": "cdfb09584a0c98bd4255668ae36c5b0c8835aa6046b12891e5ca2a5e00dcaf94",
+          "mae": 139.43134658310436,
+          "mse": 62247.40641788879,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 249.49430137357606
+        },
+        "stb": {
+          "checkpoint_sha256": "cdfb09584a0c98bd4255668ae36c5b0c8835aa6046b12891e5ca2a5e00dcaf94",
+          "mae": 13.71366873516615,
+          "mse": 765.203510673461,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 27.662312099198452
+        }
+      },
+      "experiment": "stb_10_ssl_dg_seed2_v1",
+      "fraction": 0.1,
+      "method": "ssl_dg",
+      "model_kind": "ema",
+      "seed": 2,
+      "selected_epoch": 179,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_domain_stable_seed2_v1/best.pt",
+      "checkpoint_sha256": "f4d5b20dce1c60c0d8504b8752b69c939add4741aa26b8bb2c336a151bafa18e",
+      "completed_at": "2026-10-08T08:46:00+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "f4d5b20dce1c60c0d8504b8752b69c939add4741aa26b8bb2c336a151bafa18e",
+          "mae": 209.45320313973346,
+          "mse": 122869.24410275945,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 350.5270946770869
+        },
+        "sta": {
+          "checkpoint_sha256": "f4d5b20dce1c60c0d8504b8752b69c939add4741aa26b8bb2c336a151bafa18e",
+          "mae": 105.80330621136676,
+          "mse": 37162.087516981344,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 192.77470663181242
+        },
+        "stb": {
+          "checkpoint_sha256": "f4d5b20dce1c60c0d8504b8752b69c939add4741aa26b8bb2c336a151bafa18e",
+          "mae": 10.969397185893007,
+          "mse": 505.05673373471836,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 22.47346732782279
+        }
+      },
+      "experiment": "stb_10_domain_stable_seed2_v1",
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "model_kind": "ema",
+      "seed": 2,
+      "selected_epoch": 174,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_label_only_seed3_v1/best.pt",
+      "checkpoint_sha256": "cea6862780943627104086ca811f44fde356a31cf4f60161f0aa01393fd3174d",
+      "completed_at": "2026-10-08T08:40:10+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "cea6862780943627104086ca811f44fde356a31cf4f60161f0aa01393fd3174d",
+          "mae": 224.14957816927352,
+          "mse": 165996.35424459694,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 407.4265016473486
+        },
+        "sta": {
+          "checkpoint_sha256": "cea6862780943627104086ca811f44fde356a31cf4f60161f0aa01393fd3174d",
+          "mae": 109.74418239182694,
+          "mse": 33377.2358376021,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 182.6943782320685
+        },
+        "stb": {
+          "checkpoint_sha256": "cea6862780943627104086ca811f44fde356a31cf4f60161f0aa01393fd3174d",
+          "mae": 11.354511119214784,
+          "mse": 371.6860841339169,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 19.2791619147181
+        }
+      },
+      "experiment": "stb_10_label_only_seed3_v1",
+      "fraction": 0.1,
+      "method": "label_only",
+      "model_kind": "student",
+      "seed": 3,
+      "selected_epoch": 127,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_mean_teacher_seed3_v1/best.pt",
+      "checkpoint_sha256": "845d628a405a6477eb302453f1b28c26f7d947a77937e24d263d5e5b73ce09cb",
+      "completed_at": "2026-10-08T14:34:05+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "845d628a405a6477eb302453f1b28c26f7d947a77937e24d263d5e5b73ce09cb",
+          "mae": 186.1852108830584,
+          "mse": 111223.3841206668,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 333.50170032650027
+        },
+        "sta": {
+          "checkpoint_sha256": "845d628a405a6477eb302453f1b28c26f7d947a77937e24d263d5e5b73ce09cb",
+          "mae": 96.60041594050475,
+          "mse": 27817.991499321935,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 166.787264200004
+        },
+        "stb": {
+          "checkpoint_sha256": "845d628a405a6477eb302453f1b28c26f7d947a77937e24d263d5e5b73ce09cb",
+          "mae": 12.718608871266811,
+          "mse": 529.579387539657,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 23.01259193440967
+        }
+      },
+      "experiment": "stb_10_mean_teacher_seed3_v1",
+      "fraction": 0.1,
+      "method": "mean_teacher",
+      "model_kind": "ema",
+      "seed": 3,
+      "selected_epoch": 102,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
       "checkpoint": "/mnt/home/aden/Sparse2Unseen/external/MPCount/logs/stb_10_seed3_effbs16_retry1/best_135.pth",
       "checkpoint_sha256": "f150cf69b0efd6492cde1990f11c56eb975c1a0fa8396d6f489bb2f2b873846d",
       "domains": {
@@ -336,6 +796,240 @@
       "legacy_version": "stb_10_seed3_effbs16_retry1",
       "method": "mpcount",
       "seed": 3,
+      "selected_epoch": 135,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_ssl_dg_seed3_v1/best.pt",
+      "checkpoint_sha256": "624e7a978512df1ddb5ba4dabcfa6b4c9e926a9322589fe395d213c28696e2e0",
+      "completed_at": "2026-10-08T15:07:52+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "624e7a978512df1ddb5ba4dabcfa6b4c9e926a9322589fe395d213c28696e2e0",
+          "mae": 206.37732720444728,
+          "mse": 135417.18890743336,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 367.99074568178116
+        },
+        "sta": {
+          "checkpoint_sha256": "624e7a978512df1ddb5ba4dabcfa6b4c9e926a9322589fe395d213c28696e2e0",
+          "mae": 108.24536317393544,
+          "mse": 33667.41960645429,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 183.48683769266472
+        },
+        "stb": {
+          "checkpoint_sha256": "624e7a978512df1ddb5ba4dabcfa6b4c9e926a9322589fe395d213c28696e2e0",
+          "mae": 14.347901833836023,
+          "mse": 501.7660170611626,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 22.400134308998297
+        }
+      },
+      "experiment": "stb_10_ssl_dg_seed3_v1",
+      "fraction": 0.1,
+      "method": "ssl_dg",
+      "model_kind": "ema",
+      "seed": 3,
+      "selected_epoch": 152,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_10_domain_stable_seed3_v1/best.pt",
+      "checkpoint_sha256": "ce4c5e484695d71885f0f89dbc158988fcb1f2694cc92570849611cd03d28d1d",
+      "completed_at": "2026-10-08T23:11:15+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "ce4c5e484695d71885f0f89dbc158988fcb1f2694cc92570849611cd03d28d1d",
+          "mae": 202.68823922163,
+          "mse": 124728.85494676148,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 353.1697254108306
+        },
+        "sta": {
+          "checkpoint_sha256": "ce4c5e484695d71885f0f89dbc158988fcb1f2694cc92570849611cd03d28d1d",
+          "mae": 115.95613154618809,
+          "mse": 33243.62507108081,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 182.32834412422224
+        },
+        "stb": {
+          "checkpoint_sha256": "ce4c5e484695d71885f0f89dbc158988fcb1f2694cc92570849611cd03d28d1d",
+          "mae": 9.655833007812499,
+          "mse": 274.42187913989625,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 16.565683781235723
+        }
+      },
+      "experiment": "stb_10_domain_stable_seed3_v1",
+      "fraction": 0.1,
+      "method": "domain_stable",
+      "model_kind": "ema",
+      "seed": 3,
+      "selected_epoch": 152,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_5_label_only_seed1_v1/best.pt",
+      "checkpoint_sha256": "629fbbc59dced664c193741bc5e73821624278f2043424f8519ac63f65355c52",
+      "completed_at": "2026-10-08T18:58:28+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "629fbbc59dced664c193741bc5e73821624278f2043424f8519ac63f65355c52",
+          "mae": 191.74324509700637,
+          "mse": 109427.37202401062,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 330.79808346483907
+        },
+        "sta": {
+          "checkpoint_sha256": "629fbbc59dced664c193741bc5e73821624278f2043424f8519ac63f65355c52",
+          "mae": 99.7526693209134,
+          "mse": 29654.685396503504,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 172.2053582107813
+        },
+        "stb": {
+          "checkpoint_sha256": "629fbbc59dced664c193741bc5e73821624278f2043424f8519ac63f65355c52",
+          "mae": 15.207620744536213,
+          "mse": 687.379000052268,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 26.21791372425098
+        }
+      },
+      "experiment": "stb_5_label_only_seed1_v1",
+      "fraction": 0.05,
+      "method": "label_only",
+      "model_kind": "student",
+      "seed": 1,
+      "selected_epoch": 23,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_5_mean_teacher_seed1_v1/best.pt",
+      "checkpoint_sha256": "d6f2adcb0dc3877d86ec10dfd7aa97db37e190cac71f6373e406d4b3ea79e6f6",
+      "completed_at": "2026-10-09T00:39:43+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "d6f2adcb0dc3877d86ec10dfd7aa97db37e190cac71f6373e406d4b3ea79e6f6",
+          "mae": 247.6525090505633,
+          "mse": 183346.81569271663,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 428.19016300321124
+        },
+        "sta": {
+          "checkpoint_sha256": "d6f2adcb0dc3877d86ec10dfd7aa97db37e190cac71f6373e406d4b3ea79e6f6",
+          "mae": 134.9504435740041,
+          "mse": 55589.231951226306,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 235.77368799598125
+        },
+        "stb": {
+          "checkpoint_sha256": "d6f2adcb0dc3877d86ec10dfd7aa97db37e190cac71f6373e406d4b3ea79e6f6",
+          "mae": 14.759395276033436,
+          "mse": 780.1914644050655,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 27.93190763992079
+        }
+      },
+      "experiment": "stb_5_mean_teacher_seed1_v1",
+      "fraction": 0.05,
+      "method": "mean_teacher",
+      "model_kind": "ema",
+      "seed": 1,
+      "selected_epoch": 138,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_5_mpcount_seed1_v1/best.pt",
+      "checkpoint_sha256": "683ca897e15f3571d7d14c1f4f72373fbd23d83a5a5b717f163e657ebc473877",
+      "completed_at": "2026-10-09T03:42:06+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "683ca897e15f3571d7d14c1f4f72373fbd23d83a5a5b717f163e657ebc473877",
+          "mae": 217.99506585501038,
+          "mse": 121985.6837369677,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 349.2644896592949
+        },
+        "sta": {
+          "checkpoint_sha256": "683ca897e15f3571d7d14c1f4f72373fbd23d83a5a5b717f163e657ebc473877",
+          "mae": 102.85717779876369,
+          "mse": 25909.393783030227,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 160.96395181229315
+        },
+        "stb": {
+          "checkpoint_sha256": "683ca897e15f3571d7d14c1f4f72373fbd23d83a5a5b717f163e657ebc473877",
+          "mae": 11.938056442840185,
+          "mse": 470.0571688296284,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 21.68080184932348
+        }
+      },
+      "experiment": "stb_5_mpcount_seed1_v1",
+      "fraction": 0.05,
+      "method": "mpcount",
+      "model_kind": "student",
+      "seed": 1,
+      "selected_epoch": 144,
+      "selection_domain": "stb_val",
+      "source": "stb"
+    },
+    {
+      "checkpoint": "/mnt/home/aden/Sparse2Unseen/runs/benchmark_v1/jobs/stb_5_ssl_dg_seed1_v1/best.pt",
+      "checkpoint_sha256": "9debdb0435726de51d9c3e9929ed2dce0057c8131217f017d6f67c53cca7ba12",
+      "completed_at": "2026-10-09T06:59:41+00:00",
+      "domains": {
+        "qnrf": {
+          "checkpoint_sha256": "9debdb0435726de51d9c3e9929ed2dce0057c8131217f017d6f67c53cca7ba12",
+          "mae": 201.80298823012845,
+          "mse": 127135.62641775537,
+          "n": 334,
+          "patch_size": 1024,
+          "rmse": 356.56083130057254
+        },
+        "sta": {
+          "checkpoint_sha256": "9debdb0435726de51d9c3e9929ed2dce0057c8131217f017d6f67c53cca7ba12",
+          "mae": 105.79647795758929,
+          "mse": 36720.18531569696,
+          "n": 182,
+          "patch_size": 10000,
+          "rmse": 191.62511660974133
+        },
+        "stb": {
+          "checkpoint_sha256": "9debdb0435726de51d9c3e9929ed2dce0057c8131217f017d6f67c53cca7ba12",
+          "mae": 13.060049903579905,
+          "mse": 864.354652109805,
+          "n": 316,
+          "patch_size": 10000,
+          "rmse": 29.399909049345798
+        }
+      },
+      "experiment": "stb_5_ssl_dg_seed1_v1",
+      "fraction": 0.05,
+      "method": "ssl_dg",
+      "model_kind": "ema",
+      "seed": 1,
       "selected_epoch": 135,
       "selection_domain": "stb_val",
       "source": "stb"
@@ -375,83 +1069,18 @@
       "source": "stb"
     }
   ],
-  "completed_count": 7,
+  "completed_count": 20,
   "primary_total": 141,
   "remaining": [
     {
       "error": null,
-      "name": "stb_10_domain_stable_seed1_v1",
-      "state": "training"
-    },
-    {
-      "error": null,
-      "name": "stb_10_label_only_seed2_v1",
-      "state": "training"
-    },
-    {
-      "error": null,
-      "name": "stb_10_mean_teacher_seed2_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_10_ssl_dg_seed2_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_10_domain_stable_seed2_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_10_label_only_seed3_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_10_mean_teacher_seed3_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_10_ssl_dg_seed3_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_10_domain_stable_seed3_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_5_label_only_seed1_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_5_mean_teacher_seed1_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_5_mpcount_seed1_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
-      "name": "stb_5_ssl_dg_seed1_v1",
-      "state": "pending"
-    },
-    {
-      "error": null,
       "name": "stb_5_domain_stable_seed1_v1",
-      "state": "pending"
+      "state": "training"
     },
     {
       "error": null,
       "name": "stb_5_label_only_seed2_v1",
-      "state": "pending"
+      "state": "training"
     },
     {
       "error": null,
@@ -1049,6 +1678,6 @@
       "state": "pending"
     }
   ],
-  "remaining_count": 134,
-  "updated_at": "2026-10-07T16:39:48+00:00"
+  "remaining_count": 121,
+  "updated_at": "2026-10-09T07:38:12+00:00"
 }

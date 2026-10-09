@@ -104,9 +104,9 @@ user process was changed.
 
 ## Queue and reporting
 
-The matrix contains 141 primary runs: four audited historical MPCount runs
-and three new runs are complete, two new runs are active, and 132 runs are
-pending at the 16:40 UTC snapshot. The queue advances automatically, using up
+At the **2026-10-09 07:38 UTC** verification, the matrix contains 141 primary
+runs: four audited historical MPCount runs and sixteen new runs are complete,
+two new runs are active, and 119 runs are pending. The queue advances automatically, using up
 to two GPUs, and performs
 the fixed three-domain test evaluation only after successful full training.
 The running manager is detached from the interactive shell; this does not
@@ -122,3 +122,33 @@ Code, splits, protocol, and report snapshots are being pushed through
 The final scientific conclusion remains pending until the full primary matrix
 passes the completion audit. No conclusion about SSL or the stability
 prototype is inferred from the initial training epochs.
+
+## Completed STB 10% cohort, 2026-10-09
+
+All five methods have completed all three STB 10% seeds and their fixed
+three-domain tests. Four STB 5% seed-1 methods have also completed; their
+single-seed scores do not form a complete aggregate. All 20 completed entries
+passed the checkpoint, source-selection, epoch/exposure, test ID/count, and
+per-image metric audits. The 127-test suite passes. The strict completion gate
+still refuses a final conclusion with 121 primary entries incomplete.
+
+The [STB 10% cohort report](stb_10_benchmark_seed123.md) records the descriptive
+findings and limitations. The prototype's unseen mean MAE is 105.15 on STA
+and 197.48 on QNRF, compared with B3's 116.08 and 229.74. It improves MAE in
+all three QNRF seeds but only two STA seeds. Sparse MPCount remains best on
+STB. Mean Teacher worsens source MAE versus label-only in all three seeds,
+so the proposed source-recovery hypothesis is not supported by this recipe's
+results. None of these observations changes the frozen production settings.
+
+The detached manager (PID 91577) and both active child trainers were verified
+live at 07:38 UTC; both RTX 3060 GPUs showed 100% utilization. The current jobs
+are:
+
+| STB 5% experiment | Completed epochs at snapshot | W&B |
+| --- | ---: | --- |
+| Domain-stable prototype, seed 1 | 85 / 180 | [Run](https://wandb.ai/Tim-1/Sparse2Unseen/runs/xeqk9t0y) |
+| Label-only, seed 2 | 29 / 180 | [Run](https://wandb.ai/Tim-1/Sparse2Unseen/runs/dywpedao) |
+
+The host had 98 GiB available disk space and approximately 46 GiB available
+RAM. No duplicate training process was launched, no other user's process was
+changed, and no training recipe or target-dependent selection was introduced.

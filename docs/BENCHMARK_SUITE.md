@@ -26,7 +26,9 @@ No upstream source files are edited.
 
 B1 adds ordinary source Mean Teacher consistency. B3 adds that same consistency
 to the full MPCount supervised objective. The prototype adds regional weighting
-to B3's pseudo-density loss, isolating the proposed change. All SSL methods use
+to B3's pseudo-density loss, with four extra teacher passes to estimate the
+weights. This is not a compute-matched or identical-random-trajectory ablation.
+All SSL methods use
 EMA decay ceiling 0.999, a ten-epoch supervised warmup, a ten-epoch linear ramp, and
 unsupervised weight 1. The EMA update occurs after each optimizer step, including
 warmup. The startup decay is `min(0.999, 1 - 1/(completed_updates+1))`, following
