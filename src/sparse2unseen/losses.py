@@ -8,7 +8,8 @@ def resize_density_preserve_count(target: torch.Tensor, shape: tuple[int, int]) 
     if target.shape[-2:] == shape:
         return target
     old_sum = target.sum(dim=(-2, -1), keepdim=True)
-    resized = F.interpolate(target, size=shape, mode="bilinear", align_corners=False)
+    # Area reduction retains impulses that bilinear subsampling can miss.
+    resized = F.interpolate(target, size=shape, mode="area")
     new_sum = resized.sum(dim=(-2, -1), keepdim=True).clamp_min(1e-8)
     return resized * (old_sum / new_sum)
 

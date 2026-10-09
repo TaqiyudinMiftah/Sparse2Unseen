@@ -131,26 +131,31 @@ The project should **not** claim the following as novel by themselves:
 
 - single-domain generalization for crowd counting -- MPCount and later work already study it;
 - uncertainty-guided domain generalization -- UGSDA already combines uncertainty and source-only DG;
+- sparse-source unseen-domain transfer -- TMTB already evaluates this combination;
 - semi-supervised crowd counting -- established by multiple recent methods including TMTB, P2R, and S4Crowd;
 - target-unlabeled adaptation -- P2R also reports UDA experiments, which are different from the zero-target-data setting here.
 
-The intended contribution is the **label-efficient source-only DG setting and a training mechanism designed for the interaction between source pseudo-label reliability and unseen-domain generalization**.
+The intended contribution is an **audited label-efficiency study and a tested
+training mechanism for the interaction between source pseudo-label reliability
+and unseen-domain generalization**, not the invention of the setting.
 
 A defensible claim should therefore be phrased conservatively:
 
-> In the reviewed 2023-2026 literature, we did not find a method whose central evaluation protocol combines a sparsely labeled single source domain, the remaining unlabeled source data, and direct deployment to completely unseen target crowd datasets with no target-domain access.
+> Sparse2Unseen tests whether regional prediction stability improves a matched
+> source-only SSL + DG baseline across label budgets and unseen domains.
 
-This is a working literature-based hypothesis, not a substitute for a final novelty search before submission.
+The earlier absence-of-prior-work statement is withdrawn. The
+[October audit](NOVELTY_AUDIT_2026_10.md) records the overlap and publication
+limitations. A different statistic alone does not establish a novel principle.
 
 ## Current milestone
 
-1. Reproduce the 100%-label MPCount STB -> STA/QNRF baseline.
-2. Freeze deterministic 5%, 10%, and 40% source splits.
-3. Run B0 at STB 10%.
-4. Run B1 Mean Teacher at STB 10%.
-5. Measure in-domain vs unseen-domain degradation.
-6. Run sparse MPCount and naive SSL + DG.
-7. Only then evaluate domain-stability-weighted pseudo supervision.
+The full-label STB MPCount anchor and three-seed STB 10% MPCount comparison
+are complete. The remaining [primary benchmark](BENCHMARK_SUITE.md) is frozen
+and running, beginning with STB 10% B0/B1. The
+[progress report](../reports/benchmark_progress.md) tracks all required runs.
+The final conclusion must include negative or mixed findings and distinguish
+completed baseline evidence from pending SSL/prototype results.
 
 See also:
 
